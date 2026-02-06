@@ -2,15 +2,19 @@
 
 import Link from "next/link";
 
+import { useLanguage } from "@/context/LanguageContext";
+
 const sections = [
-  { href: "/practice", label: "Пробные тесты" },
-  { href: "/question-bank", label: "Банк вопросов" },
-  { href: "/score-calculator", label: "Калькулятор баллов" },
-  { href: "/score-predictor", label: "Прогноз баллов" },
-  { href: "/reviews", label: "Отзывы" },
-];
+  { href: "/practice", key: "navPractice" },
+  { href: "/question-bank", key: "navQuestionBank" },
+  { href: "/score-calculator", key: "navScoreCalculator" },
+  { href: "/score-predictor", key: "navScorePredictor" },
+  { href: "/reviews", key: "navReviews" },
+] as const;
 
 export default function Sidebar() {
+  const { t } = useLanguage();
+
   return (
     <>
       <div className="mb-4 w-full max-w-[200px] rounded-2xl border border-slate-200 bg-white px-4 py-3 shadow-sm lg:hidden">
@@ -21,7 +25,7 @@ export default function Sidebar() {
               href={section.href}
               className="rounded-xl px-3 py-2 leading-5 transition hover:bg-blue-50 hover:text-blue-700"
             >
-              {section.label}
+              {t(section.key)}
             </Link>
           ))}
         </nav>
@@ -35,12 +39,12 @@ export default function Sidebar() {
               href={section.href}
               className="rounded-2xl px-4 py-3 transition hover:bg-blue-50 hover:text-blue-700"
             >
-              {section.label}
+              {t(section.key)}
             </Link>
           ))}
         </nav>
         <div className="mt-auto rounded-2xl bg-blue-50 p-4 text-xs text-blue-700">
-          Отслеживайте прогресс и готовьтесь к экзаменам увереннее.
+          {t("footerAbout")}
         </div>
       </aside>
 

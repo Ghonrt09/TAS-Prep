@@ -4,8 +4,10 @@ import { useMemo, useState } from "react";
 
 import QuestionCard from "@/components/QuestionCard";
 import { mockQuestions } from "@/lib/mockQuestions";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function PracticePage() {
+  const { t } = useLanguage();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<number, string>>({});
 
@@ -39,14 +41,16 @@ export default function PracticePage() {
   return (
     <section className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Пробные тесты</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">
+          {t("practiceTitle")}
+        </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Отвечайте на вопросы и следите за прогрессом. Данные учебные.
+          {t("practiceSubtitle")}
         </p>
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
-        Прогресс: {progress}% ({currentIndex + 1}/{totalQuestions})
+        {t("practiceProgress")}: {progress}% ({currentIndex + 1}/{totalQuestions})
         <div className="mt-3 h-2 w-full rounded-full bg-slate-100">
           <div
             className="h-2 rounded-full bg-blue-600 transition-all"
@@ -69,7 +73,7 @@ export default function PracticePage() {
           disabled={currentIndex === 0}
           className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Назад
+          {t("practiceBack")}
         </button>
         <button
           onClick={() =>
@@ -78,20 +82,21 @@ export default function PracticePage() {
           disabled={isLastQuestion}
           className="rounded-full bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Дальше
+          {t("practiceNext")}
         </button>
       </div>
 
       {isLastQuestion ? (
         <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6">
           <h2 className="text-lg font-semibold text-slate-900">
-            Результаты
+            {t("practiceResults")}
           </h2>
           <p className="mt-2 text-sm text-slate-600">
-            Всего вопросов: {totalQuestions}
+            {t("practiceTotal")}: {totalQuestions}
           </p>
           <p className="mt-1 text-sm text-slate-600">
-            Правильно: {results.correct} · Неправильно: {results.incorrect}
+            {t("practiceCorrect")}: {results.correct} · {t("practiceIncorrect")}:{" "}
+            {results.incorrect}
           </p>
         </div>
       ) : null}

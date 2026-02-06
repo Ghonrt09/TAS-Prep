@@ -4,13 +4,15 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
+import { useLanguage } from "@/context/LanguageContext";
+
 const navLinks = [
-  { href: "/practice", label: "Пробные тесты" },
-  { href: "/question-bank", label: "Банк вопросов" },
-  { href: "/score-calculator", label: "Калькулятор баллов" },
-  { href: "/score-predictor", label: "Прогноз баллов" },
-  { href: "/reviews", label: "Отзывы" },
-];
+  { href: "/practice", key: "navPractice" },
+  { href: "/question-bank", key: "navQuestionBank" },
+  { href: "/score-calculator", key: "navScoreCalculator" },
+  { href: "/score-predictor", key: "navScorePredictor" },
+  { href: "/reviews", key: "navReviews" },
+] as const;
 
 const examTimers = [
   { label: "NIS", target: "2026-05-15T09:00:00+06:00" },
@@ -38,6 +40,7 @@ const formatCountdown = (targetDate: Date, now: number) => {
 
 export default function Navbar() {
   const [now, setNow] = useState(() => Date.now());
+  const { language, setLanguage, t } = useLanguage();
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -77,10 +80,15 @@ export default function Navbar() {
                 key={timer.label}
                 className="flex min-w-[180px] items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm sm:min-w-[200px]"
               >
-                <span className="text-slate-500">До {timer.label}:</span>
+                <span className="text-slate-500">
+                  {t("timerPrefix", { label: timer.label })}
+                </span>
                 <span className="font-mono text-slate-900">
-                  {countdown.days}д {countdown.hours}ч {countdown.minutes}м{" "}
-                  {countdown.seconds}с
+                  {countdown.days}
+                  {t("timerDays")} {countdown.hours}
+                  {t("timerHours")} {countdown.minutes}
+                  {t("timerMinutes")} {countdown.seconds}
+                  {t("timerSeconds")}
                 </span>
               </div>
             );
@@ -93,15 +101,39 @@ export default function Navbar() {
               href={link.href}
               className="transition hover:text-slate-900"
             >
-              {link.label}
+              {t(link.key)}
             </Link>
           ))}
         </nav>
+        <div className="hidden items-center gap-2 lg:flex">
+          <button
+            type="button"
+            onClick={() => setLanguage("ru")}
+            className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+              language === "ru"
+                ? "bg-blue-600 text-white"
+                : "border border-slate-200 text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            RU
+          </button>
+          <button
+            type="button"
+            onClick={() => setLanguage("kk")}
+            className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+              language === "kk"
+                ? "bg-blue-600 text-white"
+                : "border border-slate-200 text-slate-600 hover:text-slate-900"
+            }`}
+          >
+            KZ
+          </button>
+        </div>
         <Link
           href="/auth"
           className="rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm transition hover:bg-blue-100"
         >
-          Войти
+          {t("navSignIn")}
         </Link>
       </div>
     </header>

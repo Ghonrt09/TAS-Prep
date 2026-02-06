@@ -3,14 +3,16 @@
 import Image from "next/image";
 
 import { useAuth } from "@/context/AuthContext";
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function AuthButton() {
   const { user, loading, error, signInWithGoogle, signOutUser } = useAuth();
+  const { t } = useLanguage();
 
   if (loading) {
     return (
       <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
-        Загружаем вход...
+        {t("authLoading")}
       </div>
     );
   }
@@ -22,7 +24,7 @@ export default function AuthButton() {
           {user.photoURL ? (
             <Image
               src={user.photoURL}
-              alt={user.displayName ?? "Аватар пользователя"}
+              alt={user.displayName ?? t("authAvatarAlt")}
               width={40}
               height={40}
               className="rounded-full"
@@ -34,7 +36,7 @@ export default function AuthButton() {
           )}
           <div>
             <p className="text-sm font-semibold text-slate-900">
-              {user.displayName ?? "Ученик"}
+              {user.displayName ?? t("authStudent")}
             </p>
             <p className="text-xs text-slate-500">{user.email}</p>
           </div>
@@ -42,7 +44,7 @@ export default function AuthButton() {
             onClick={signOutUser}
             className="ml-auto rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-300"
           >
-            Выйти
+            {t("authSignOut")}
           </button>
         </div>
       ) : (
@@ -50,11 +52,11 @@ export default function AuthButton() {
           onClick={signInWithGoogle}
           className="rounded-xl bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
         >
-          Войти через Google
+          {t("authSignInGoogle")}
         </button>
       )}
       {error ? (
-        <p className="text-xs text-rose-500">Ошибка: {error}</p>
+        <p className="text-xs text-rose-500">{t("authError", { error })}</p>
       ) : null}
     </div>
   );

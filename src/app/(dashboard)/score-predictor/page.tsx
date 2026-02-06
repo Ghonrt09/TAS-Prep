@@ -2,7 +2,10 @@
 
 import { useMemo, useState } from "react";
 
+import { useLanguage } from "@/context/LanguageContext";
+
 export default function ScorePredictorPage() {
+  const { t } = useLanguage();
   const [accuracy, setAccuracy] = useState(75);
   const [totalQuestions, setTotalQuestions] = useState(50);
 
@@ -21,17 +24,17 @@ export default function ScorePredictorPage() {
     <section className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold text-slate-900">
-          Прогноз баллов
+          {t("scorePredictTitle")}
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Оцените результат по вашей недавней точности.
+          {t("scorePredictSubtitle")}
         </p>
       </div>
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <form className="flex flex-col gap-4 text-sm text-slate-700">
             <label className="flex flex-col gap-2">
-              Точность (%) за последнее время
+              {t("scorePredictAccuracy")}
               <input
                 type="number"
                 min={0}
@@ -44,7 +47,7 @@ export default function ScorePredictorPage() {
               />
             </label>
             <label className="flex flex-col gap-2">
-              Всего вопросов в тесте
+              {t("scorePredictTotalQuestions")}
               <input
                 type="number"
                 min={10}
@@ -59,16 +62,17 @@ export default function ScorePredictorPage() {
         </div>
         <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6">
           <p className="text-sm font-semibold uppercase tracking-widest text-emerald-700">
-            Прогноз
+            {t("scorePredictOutcome")}
           </p>
           <div className="mt-4 text-4xl font-semibold text-slate-900">
-            {predicted.score} баллов
+            {t("scorePredictPoints", { value: predicted.score })}
           </div>
           <p className="mt-3 text-sm text-slate-600">
-            Правильно: {predicted.correct} · Неправильно: {predicted.incorrect}
+            {t("scorePredictCorrect")}: {predicted.correct} ·{" "}
+            {t("scorePredictIncorrect")}: {predicted.incorrect}
           </p>
           <div className="mt-6 rounded-2xl bg-white p-4 text-sm text-slate-600">
-            Используйте это, чтобы поставить реальную цель на следующий тест.
+            {t("scorePredictTip")}
           </div>
         </div>
       </div>

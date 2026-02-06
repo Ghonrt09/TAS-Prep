@@ -1,68 +1,61 @@
+"use client";
+
 import Link from "next/link";
 
-const features = [
-  {
-    title: "Точная подготовка",
-    description:
-      "Короткие уроки и практика по НИШ, БИЛ и РФМШ.",
-  },
-  {
-    title: "Понятный прогресс",
-    description:
-      "Сразу видно, что получается, а где нужно больше практики.",
-  },
-  {
-    title: "Удобно родителям",
-    description:
-      "Простые отчеты и результаты для родителей.",
-  },
-];
-
-const examCards = [
-  {
-    title: "Поступление в НИШ",
-    detail: "База по математике и логике",
-    badge: "База",
-  },
-  {
-    title: "Поступление в БИЛ",
-    detail: "Скорость и точность",
-    badge: "Пробный",
-  },
-  {
-    title: "Отбор в РФМШ",
-    detail: "Углубленные задания",
-    badge: "Скоро",
-  },
-];
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function HomePage() {
+  const { t } = useLanguage();
+
+  const features = [
+    { title: t("feature1Title"), description: t("feature1Body") },
+    { title: t("feature2Title"), description: t("feature2Body") },
+    { title: t("feature3Title"), description: t("feature3Body") },
+  ];
+
+  const examCards = [
+    {
+      title: t("examNisTitle"),
+      detail: t("examNisDetail"),
+      badge: t("examNisBadge"),
+    },
+    {
+      title: t("examBilTitle"),
+      detail: t("examBilDetail"),
+      badge: t("examBilBadge"),
+    },
+    {
+      title: t("examRfmshTitle"),
+      detail: t("examRfmshDetail"),
+      badge: t("examRfmshBadge"),
+    },
+  ];
+
   return (
     <div className="bg-slate-50">
       <section className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="flex flex-col gap-6">
           <span className="w-fit rounded-full bg-amber-100 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-amber-700">
-            MVP для 5–6 классов
+            {t("heroBadge")}
           </span>
           <h1 className="max-w-2xl text-4xl font-semibold leading-tight text-slate-900 sm:text-5xl">
-            Готовьтесь к НИШ, БИЛ и РФМШ умнее.
+            {t("heroTitle")}
           </h1>
           <p className="max-w-2xl text-lg text-slate-600">
-            BilimBridge объединяет пробные тесты, банк вопросов и аналитику в
-            одной удобной платформе для школьников Казахстана.
+            {t("heroBody")}
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
               href="/practice"
               className="rounded-full bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
             >
-              Начать практику
+              {t("heroCtaPractice")}
             </Link>
             <Link
               href="/question-bank"
               className="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300"
             >
-              Открыть банк вопросов
+              {t("heroCtaQuestionBank")}
             </Link>
           </div>
         </div>
@@ -88,10 +81,10 @@ export default function HomePage() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-blue-700">
-                Готово к тренировкам
+                {t("sectionBadge")}
               </p>
               <h2 className="mt-3 text-2xl font-semibold text-slate-900">
-                Все, что нужно для регулярной подготовки.
+                {t("sectionTitle")}
               </h2>
             </div>
             <div className="flex gap-3">
@@ -99,13 +92,13 @@ export default function HomePage() {
                 href="/score-calculator"
                 className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-blue-700"
               >
-                Калькулятор баллов
+                {t("sectionCalculator")}
               </Link>
               <Link
                 href="/score-predictor"
                 className="rounded-full border border-blue-200 px-5 py-2 text-sm font-semibold text-blue-700"
               >
-                Прогноз баллов
+                {t("sectionPredictor")}
               </Link>
             </div>
           </div>
@@ -131,91 +124,75 @@ export default function HomePage() {
       <section className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6 lg:px-8">
         <div className="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
           <h2 className="text-2xl font-semibold text-slate-900">
-            Инструкции и структура экзаменов
+            {t("instructionsTitle")}
           </h2>
           <div className="mt-6 grid gap-6 lg:grid-cols-3">
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
               <h3 className="text-lg font-semibold text-slate-900">
-                Структура экзамена НИШ
+                {t("nisTitle")}
               </h3>
               <div className="mt-4 space-y-4 text-sm text-slate-700">
                 <div>
                   <p className="font-semibold text-slate-900">
-                    День 1 (Естественно-математическое направление)
+                    {t("nisDay1Title")}
                   </p>
                   <ul className="mt-2 list-disc space-y-1 pl-5">
-                    <li>
-                      Математика: 40 вопросов, 1 час (максимум 400 баллов).
-                    </li>
-                    <li>
-                      Количественные характеристики: 60 вопросов, 30 минут
-                      (максимум 300 баллов).
-                    </li>
-                    <li>
-                      Естествознание: 20 вопросов, 30 минут (максимум 200
-                      баллов).
-                    </li>
+                    <li>{t("nisDay1Item1")}</li>
+                    <li>{t("nisDay1Item2")}</li>
+                    <li>{t("nisDay1Item3")}</li>
                   </ul>
                 </div>
                 <div>
                   <p className="font-semibold text-slate-900">
-                    День 2 (Языковое направление)
+                    {t("nisDay2Title")}
                   </p>
                   <ul className="mt-2 list-disc space-y-1 pl-5">
-                    <li>Казахский язык: 20 вопросов, 40 минут.</li>
-                    <li>Русский язык: 20 вопросов, 40 минут.</li>
-                    <li>Английский язык: 20 вопросов, 40 минут.</li>
+                    <li>{t("nisDay2Item1")}</li>
+                    <li>{t("nisDay2Item2")}</li>
+                    <li>{t("nisDay2Item3")}</li>
                   </ul>
                   <p className="mt-2">
-                    Каждый языковой тест оценивается максимум в 200 баллов.
+                    {t("nisDay2Note")}
                   </p>
                 </div>
               </div>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
-              <h3 className="text-lg font-semibold text-slate-900">БИЛ</h3>
+              <h3 className="text-lg font-semibold text-slate-900">
+                {t("bilTitle")}
+              </h3>
               <div className="mt-4 space-y-3 text-sm text-slate-700">
-                <p className="font-semibold text-slate-900">1 тур (Отборочный)</p>
-                <p>
-                  Это общее тестирование для проверки базовых знаний и логики.
+                <p className="font-semibold text-slate-900">
+                  {t("bilRoundTitle")}
                 </p>
+                <p>{t("bilIntro")}</p>
                 <ul className="list-disc space-y-1 pl-5">
-                  <li>Количество вопросов: 60 вопросов.</li>
-                  <li>
-                    Предметы: Математика и Логика — 50 вопросов; Грамотность
-                    чтения — 10 вопросов (на языке обучения — казахском или
-                    русском).
-                  </li>
-                  <li>Время: 110 минут.</li>
-                  <li>
-                    Система баллов: За правильный ответ — +4 балла, за
-                    неправильный — минус 1 балл (метод штрафных баллов).
-                  </li>
+                  <li>{t("bilItem1")}</li>
+                  <li>{t("bilItem2")}</li>
+                  <li>{t("bilItem3")}</li>
+                  <li>{t("bilItem4")}</li>
                 </ul>
               </div>
             </div>
             <div className="rounded-2xl border border-slate-200 bg-slate-50 p-6">
               <h3 className="text-lg font-semibold text-slate-900">
-                Формат экзамена (РФМШ)
+                {t("rfmshTitle")}
               </h3>
               <div className="mt-4 space-y-3 text-sm text-slate-700">
                 <ul className="list-disc space-y-1 pl-5">
-                  <li>Дисциплины: Математика и логика.</li>
-                  <li>
-                    Тип заданий: «Открытый тест» — без вариантов ответа. Ответ
-                    нужно вписать самостоятельно.
-                  </li>
-                  <li>Количество заданий: 30 вопросов.</li>
-                  <li>Длительность: 120 минут (2 часа).</li>
+                  <li>{t("rfmshItem1")}</li>
+                  <li>{t("rfmshItem2")}</li>
+                  <li>{t("rfmshItem3")}</li>
+                  <li>{t("rfmshItem4")}</li>
                 </ul>
                 <div>
                   <p className="font-semibold text-slate-900">
-                    Сложность и баллы (всего 150 баллов)
+                    {t("rfmshScoreTitle")}
                   </p>
                   <ul className="mt-2 list-disc space-y-1 pl-5">
-                    <li>10 задач уровня A (базовые) — по 3 балла.</li>
-                    <li>10 задач уровня B (средние) — по 5 баллов.</li>
-                    <li>10 задач уровня C (сложные) — по 7 баллов.</li>
+                    <li>{t("rfmshScoreItem1")}</li>
+                    <li>{t("rfmshScoreItem2")}</li>
+                    <li>{t("rfmshScoreItem3")}</li>
                   </ul>
                 </div>
               </div>
@@ -231,55 +208,60 @@ export default function HomePage() {
               BilimBridge
             </p>
             <p className="text-sm text-slate-600">
-              Подготовка к НИШ, БИЛ и РФМШ с пробными тестами и понятным
-              прогрессом.
+              {t("footerAbout")}
             </p>
           </div>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             <div>
-              <p className="text-sm font-semibold text-slate-900">Сервисы</p>
+              <p className="text-sm font-semibold text-slate-900">
+                {t("footerServices")}
+              </p>
               <ul className="mt-3 space-y-2 text-sm text-slate-600">
                 <li>
                   <Link href="/practice" className="hover:text-blue-700">
-                    Пробные тесты
+                    {t("footerServicePractice")}
                   </Link>
                 </li>
                 <li>
                   <Link href="/question-bank" className="hover:text-blue-700">
-                    Банк вопросов
+                    {t("footerServiceBank")}
                   </Link>
                 </li>
                 <li>
                   <Link href="/score-calculator" className="hover:text-blue-700">
-                    Калькулятор баллов
+                    {t("footerServiceCalculator")}
                   </Link>
                 </li>
                 <li>
                   <Link href="/score-predictor" className="hover:text-blue-700">
-                    Прогноз баллов
+                    {t("footerServicePredictor")}
                   </Link>
                 </li>
                 <li>
                   <Link href="/reviews" className="hover:text-blue-700">
-                    Отзывы
+                    {t("footerServiceReviews")}
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-900">Материалы</p>
+              <p className="text-sm font-semibold text-slate-900">
+                {t("footerResources")}
+              </p>
               <ul className="mt-3 space-y-2 text-sm text-slate-600">
-                <li>Советы по экзаменам</li>
-                <li>План занятий на неделю</li>
-                <li>Памятка для родителей</li>
+                <li>{t("footerResourceTips")}</li>
+                <li>{t("footerResourcePlan")}</li>
+                <li>{t("footerResourceParents")}</li>
               </ul>
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-900">Контакты</p>
+              <p className="text-sm font-semibold text-slate-900">
+                {t("footerContacts")}
+              </p>
               <ul className="mt-3 space-y-2 text-sm text-slate-600">
-                <li>Instagram — скоро</li>
-                <li>Telegram — скоро</li>
-                <li>Почта: hello@bilimbridge.kz</li>
+                <li>{t("footerContactInstagram")}</li>
+                <li>{t("footerContactTelegram")}</li>
+                <li>{t("footerContactEmail")}</li>
               </ul>
             </div>
           </div>

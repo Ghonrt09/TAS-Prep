@@ -1,33 +1,40 @@
-const categories = [
-  {
-    title: "Арифметика",
-    description: "Дроби, проценты и быстрые вычисления.",
-    questions: 120,
-  },
-  {
-    title: "Основы алгебры",
-    description: "Линейные уравнения и простые задачи.",
-    questions: 80,
-  },
-  {
-    title: "Логика и закономерности",
-    description: "Последовательности, головоломки и тренировка мышления.",
-    questions: 95,
-  },
-  {
-    title: "Геометрия",
-    description: "Фигуры, углы и пространственное мышление.",
-    questions: 60,
-  },
-];
+"use client";
+
+import { useLanguage } from "@/context/LanguageContext";
 
 export default function QuestionBankPage() {
+  const { t } = useLanguage();
+  const categories = [
+    {
+      title: t("categoryArithmetic"),
+      description: t("categoryArithmeticDesc"),
+      questions: 120,
+    },
+    {
+      title: t("categoryAlgebra"),
+      description: t("categoryAlgebraDesc"),
+      questions: 80,
+    },
+    {
+      title: t("categoryLogic"),
+      description: t("categoryLogicDesc"),
+      questions: 95,
+    },
+    {
+      title: t("categoryGeometry"),
+      description: t("categoryGeometryDesc"),
+      questions: 60,
+    },
+  ];
+
   return (
     <section className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Банк вопросов</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">
+          {t("bankTitle")}
+        </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Выберите раздел. Контент пополняется каждую неделю.
+          {t("bankSubtitle")}
         </p>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
@@ -43,9 +50,9 @@ export default function QuestionBankPage() {
               {category.description}
             </p>
             <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
-              <span>{category.questions} вопросов</span>
+              <span>{t("bankQuestions", { value: category.questions })}</span>
               <button className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600">
-                Открыть
+                {t("bankOpen")}
               </button>
             </div>
           </div>

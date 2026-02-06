@@ -2,7 +2,10 @@
 
 import { useMemo, useState } from "react";
 
+import { useLanguage } from "@/context/LanguageContext";
+
 export default function ScoreCalculatorPage() {
+  const { t } = useLanguage();
   const [correct, setCorrect] = useState(20);
   const [incorrect, setIncorrect] = useState(5);
   const [skipped, setSkipped] = useState(5);
@@ -16,17 +19,17 @@ export default function ScoreCalculatorPage() {
     <section className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold text-slate-900">
-          Калькулятор баллов
+          {t("scoreCalcTitle")}
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Правила БИЛ: +4 за правильный, −1 за неправильный, 0 за пропуск.
+          {t("scoreCalcSubtitle")}
         </p>
       </div>
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <form className="flex flex-col gap-4 text-sm text-slate-700">
             <label className="flex flex-col gap-2">
-              Правильные ответы
+              {t("scoreCalcCorrect")}
               <input
                 type="number"
                 min={0}
@@ -38,7 +41,7 @@ export default function ScoreCalculatorPage() {
               />
             </label>
             <label className="flex flex-col gap-2">
-              Неправильные ответы
+              {t("scoreCalcIncorrect")}
               <input
                 type="number"
                 min={0}
@@ -50,7 +53,7 @@ export default function ScoreCalculatorPage() {
               />
             </label>
             <label className="flex flex-col gap-2">
-              Пропущенные вопросы
+              {t("scoreCalcSkipped")}
               <input
                 type="number"
                 min={0}
@@ -65,16 +68,17 @@ export default function ScoreCalculatorPage() {
         </div>
         <div className="rounded-2xl border border-blue-100 bg-blue-50 p-6">
           <p className="text-sm font-semibold uppercase tracking-widest text-blue-700">
-            Оценка баллов
+            {t("scoreCalcEstimate")}
           </p>
           <div className="mt-4 text-4xl font-semibold text-slate-900">
-            {totalScore} баллов
+            {t("scoreCalcPoints", { value: totalScore })}
           </div>
           <p className="mt-3 text-sm text-slate-600">
-            Всего отвечено: {correct + incorrect} · Пропущено: {skipped}
+            {t("scoreCalcTotal")}: {correct + incorrect} ·{" "}
+            {t("scoreCalcSkippedLabel")}: {skipped}
           </p>
           <div className="mt-6 rounded-2xl bg-white p-4 text-sm text-slate-600">
-            Старайтесь меньше пропускать и отвечать точнее, чтобы набрать больше.
+            {t("scoreCalcTip")}
           </div>
         </div>
       </div>
