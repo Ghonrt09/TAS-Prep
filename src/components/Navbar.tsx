@@ -5,13 +5,11 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 const navLinks = [
-  { href: "/", label: "Home" },
   { href: "/practice", label: "Practice Tests" },
   { href: "/question-bank", label: "Question Bank" },
   { href: "/score-calculator", label: "Score Calculator" },
   { href: "/score-predictor", label: "Score Predictor" },
   { href: "/reviews", label: "Reviews" },
-  { href: "/auth", label: "Sign In" },
 ];
 
 const examTimers = [
