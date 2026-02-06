@@ -10,7 +10,7 @@ export default function AuthButton() {
   if (loading) {
     return (
       <div className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
-        Loading authentication...
+        Загружаем вход...
       </div>
     );
   }
@@ -22,7 +22,7 @@ export default function AuthButton() {
           {user.photoURL ? (
             <Image
               src={user.photoURL}
-              alt={user.displayName ?? "User avatar"}
+              alt={user.displayName ?? "Аватар пользователя"}
               width={40}
               height={40}
               className="rounded-full"
@@ -34,7 +34,7 @@ export default function AuthButton() {
           )}
           <div>
             <p className="text-sm font-semibold text-slate-900">
-              {user.displayName ?? "Student"}
+              {user.displayName ?? "Ученик"}
             </p>
             <p className="text-xs text-slate-500">{user.email}</p>
           </div>
@@ -42,7 +42,7 @@ export default function AuthButton() {
             onClick={signOutUser}
             className="ml-auto rounded-full border border-slate-200 px-4 py-2 text-xs font-semibold text-slate-700 transition hover:border-slate-300"
           >
-            Sign out
+            Выйти
           </button>
         </div>
       ) : (
@@ -50,11 +50,11 @@ export default function AuthButton() {
           onClick={signInWithGoogle}
           className="rounded-xl bg-blue-700 px-4 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
         >
-          Sign in with Google
+          Войти через Google
         </button>
       )}
       {error ? (
-        <p className="text-xs text-rose-500">Error: {error}</p>
+        <p className="text-xs text-rose-500">Ошибка: {error}</p>
       ) : null}
     </div>
   );

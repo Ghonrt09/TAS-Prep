@@ -1,11 +1,11 @@
 const reviews = [
   {
-    name: "Aigerim K.",
-    message: "The mock tests feel realistic and easy to follow.",
+    name: "Айгерим К.",
+    message: "Пробные тесты похожи на реальные, все понятно и удобно.",
   },
   {
-    name: "Parent of 6th grader",
-    message: "Simple layout and clear progress. We want more math sets.",
+    name: "Родитель 6-классника",
+    message: "Простой интерфейс и понятный прогресс. Хотим больше математики.",
   },
 ];
 
@@ -13,9 +13,9 @@ export default function ReviewsPage() {
   return (
     <section className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Reviews</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">Отзывы</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Share feedback to help shape the MVP.
+          Поделитесь отзывом, чтобы улучшить проект.
         </p>
       </div>
       <div className="grid gap-4 md:grid-cols-2">
@@ -33,21 +33,21 @@ export default function ReviewsPage() {
       </div>
       <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
         <h2 className="text-lg font-semibold text-slate-900">
-          Leave a comment
+          Оставить отзыв
         </h2>
         <form className="mt-4 flex flex-col gap-3 text-sm text-slate-700">
           <input
             type="text"
-            placeholder="Your name"
+            placeholder="Ваше имя"
             className="rounded-xl border border-slate-200 px-3 py-2"
           />
           <textarea
             rows={4}
-            placeholder="What should we improve next?"
+            placeholder="Что улучшить в первую очередь?"
             className="rounded-xl border border-slate-200 px-3 py-2"
           />
           <button className="w-fit rounded-xl bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-600">
-            Send feedback
+            Отправить
           </button>
         </form>
       </div>

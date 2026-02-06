@@ -17,7 +17,7 @@ export default function QuestionCard({
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
       <p className="text-sm font-semibold uppercase tracking-widest text-slate-400">
-        Multiple Choice
+        Выберите ответ
       </p>
       <h2 className="mt-3 text-xl font-semibold text-slate-900">
         {question.question}

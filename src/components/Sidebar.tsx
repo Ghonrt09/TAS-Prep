@@ -3,11 +3,11 @@
 import Link from "next/link";
 
 const sections = [
-  { href: "/practice", label: "Practice Tests" },
-  { href: "/question-bank", label: "Question Bank" },
-  { href: "/score-calculator", label: "Score Calculator" },
-  { href: "/score-predictor", label: "Score Predictor" },
-  { href: "/reviews", label: "Reviews" },
+  { href: "/practice", label: "Пробные тесты" },
+  { href: "/question-bank", label: "Банк вопросов" },
+  { href: "/score-calculator", label: "Калькулятор баллов" },
+  { href: "/score-predictor", label: "Прогноз баллов" },
+  { href: "/reviews", label: "Отзывы" },
 ];
 
 export default function Sidebar() {
@@ -40,7 +40,7 @@ export default function Sidebar() {
           ))}
         </nav>
         <div className="mt-auto rounded-2xl bg-blue-50 p-4 text-xs text-blue-700">
-          Track your progress and build confidence for entrance exams.
+          Отслеживайте прогресс и готовьтесь к экзаменам увереннее.
         </div>
       </aside>
 

@@ -15,9 +15,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "BilimBridge | NIS, BIL, RFMSH Prep",
+  title: "BilimBridge | Подготовка к НИШ, БИЛ, РФМШ",
   description:
-    "An MVP learning platform for grade 5–6 students preparing for NIS, BIL, and RFMSH entrance exams.",
+    "Платформа для учеников 5–6 классов, готовящихся к вступительным экзаменам НИШ, БИЛ и РФМШ.",
 };
 
 export default function RootLayout({
@@ -26,7 +26,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="ru">
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-slate-50 text-slate-900`}
       >

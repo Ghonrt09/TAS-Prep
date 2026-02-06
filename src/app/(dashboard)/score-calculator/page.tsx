@@ -16,17 +16,17 @@ export default function ScoreCalculatorPage() {
     <section className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold text-slate-900">
-          Score Calculator
+          Калькулятор баллов
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          BIL rule: +4 for correct, −1 for incorrect, 0 for skipped.
+          Правила БИЛ: +4 за правильный, −1 за неправильный, 0 за пропуск.
         </p>
       </div>
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <form className="flex flex-col gap-4 text-sm text-slate-700">
             <label className="flex flex-col gap-2">
-              Correct answers
+              Правильные ответы
               <input
                 type="number"
                 min={0}
@@ -38,7 +38,7 @@ export default function ScoreCalculatorPage() {
               />
             </label>
             <label className="flex flex-col gap-2">
-              Incorrect answers
+              Неправильные ответы
               <input
                 type="number"
                 min={0}
@@ -50,7 +50,7 @@ export default function ScoreCalculatorPage() {
               />
             </label>
             <label className="flex flex-col gap-2">
-              Skipped questions
+              Пропущенные вопросы
               <input
                 type="number"
                 min={0}
@@ -65,16 +65,16 @@ export default function ScoreCalculatorPage() {
         </div>
         <div className="rounded-2xl border border-blue-100 bg-blue-50 p-6">
           <p className="text-sm font-semibold uppercase tracking-widest text-blue-700">
-            Estimated score
+            Оценка баллов
           </p>
           <div className="mt-4 text-4xl font-semibold text-slate-900">
-            {totalScore} points
+            {totalScore} баллов
           </div>
           <p className="mt-3 text-sm text-slate-600">
-            Total answered: {correct + incorrect} · Skipped: {skipped}
+            Всего отвечено: {correct + incorrect} · Пропущено: {skipped}
           </p>
           <div className="mt-6 rounded-2xl bg-white p-4 text-sm text-slate-600">
-            Keep skipped answers low and focus on accuracy to maximize points.
+            Старайтесь меньше пропускать и отвечать точнее, чтобы набрать больше.
           </div>
         </div>
       </div>

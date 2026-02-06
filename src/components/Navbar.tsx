@@ -5,11 +5,11 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 const navLinks = [
-  { href: "/practice", label: "Practice Tests" },
-  { href: "/question-bank", label: "Question Bank" },
-  { href: "/score-calculator", label: "Score Calculator" },
-  { href: "/score-predictor", label: "Score Predictor" },
-  { href: "/reviews", label: "Reviews" },
+  { href: "/practice", label: "Пробные тесты" },
+  { href: "/question-bank", label: "Банк вопросов" },
+  { href: "/score-calculator", label: "Калькулятор баллов" },
+  { href: "/score-predictor", label: "Прогноз баллов" },
+  { href: "/reviews", label: "Отзывы" },
 ];
 
 const examTimers = [
@@ -77,10 +77,10 @@ export default function Navbar() {
                 key={timer.label}
                 className="flex min-w-[180px] items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm sm:min-w-[200px]"
               >
-                <span className="text-slate-500">Next {timer.label}:</span>
+                <span className="text-slate-500">До {timer.label}:</span>
                 <span className="font-mono text-slate-900">
-                  {countdown.days}d {countdown.hours}h {countdown.minutes}m{" "}
-                  {countdown.seconds}s
+                  {countdown.days}д {countdown.hours}ч {countdown.minutes}м{" "}
+                  {countdown.seconds}с
                 </span>
               </div>
             );
@@ -101,7 +101,7 @@ export default function Navbar() {
           href="/auth"
           className="rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm transition hover:bg-blue-100"
         >
-          Sign In
+          Войти
         </Link>
       </div>
     </header>

@@ -2,37 +2,37 @@ import Link from "next/link";
 
 const features = [
   {
-    title: "Focused Exam Prep",
+    title: "Точная подготовка",
     description:
-      "Short lessons and targeted practice for NIS, BIL, and RFMSH.",
+      "Короткие уроки и практика по НИШ, БИЛ и РФМШ.",
   },
   {
-    title: "Clear Progress",
+    title: "Понятный прогресс",
     description:
-      "Track what you know and where you need more practice in minutes.",
+      "Сразу видно, что получается, а где нужно больше практики.",
   },
   {
-    title: "Parent Friendly",
+    title: "Удобно родителям",
     description:
-      "Simple dashboards and reports to keep families in the loop.",
+      "Простые отчеты и результаты для родителей.",
   },
 ];
 
 const examCards = [
   {
-    title: "NIS Entrance",
-    detail: "Math + Logic fundamentals",
-    badge: "Core",
+    title: "Поступление в НИШ",
+    detail: "База по математике и логике",
+    badge: "База",
   },
   {
-    title: "BIL Admission",
-    detail: "Speed + accuracy practice",
-    badge: "Mock",
+    title: "Поступление в БИЛ",
+    detail: "Скорость и точность",
+    badge: "Пробный",
   },
   {
-    title: "RFMSH Screening",
-    detail: "Advanced thinking drills",
-    badge: "Soon",
+    title: "Отбор в РФМШ",
+    detail: "Углубленные задания",
+    badge: "Скоро",
   },
 ];
 
@@ -42,28 +42,27 @@ export default function HomePage() {
       <section className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
         <div className="flex flex-col gap-6">
           <span className="w-fit rounded-full bg-amber-100 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-amber-700">
-            MVP for Grade 5–6
+            MVP для 5–6 классов
           </span>
           <h1 className="max-w-2xl text-4xl font-semibold leading-tight text-slate-900 sm:text-5xl">
-            Prepare smarter for NIS, BIL, and RFMSH entrance exams.
+            Готовьтесь к НИШ, БИЛ и РФМШ умнее.
           </h1>
           <p className="max-w-2xl text-lg text-slate-600">
-            BilimBridge brings mock tests, a growing question bank, and
-            performance insights into one simple dashboard built for Kazakh
-            students.
+            BilimBridge объединяет пробные тесты, банк вопросов и аналитику в
+            одной удобной платформе для школьников Казахстана.
           </p>
           <div className="flex flex-wrap gap-4">
             <Link
               href="/practice"
               className="rounded-full bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
             >
-              Start Practice
+              Начать практику
             </Link>
             <Link
               href="/question-bank"
               className="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300"
             >
-              Explore Question Bank
+              Открыть банк вопросов
             </Link>
           </div>
         </div>
@@ -89,10 +88,10 @@ export default function HomePage() {
           <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
             <div>
               <p className="text-xs font-semibold uppercase tracking-widest text-blue-700">
-                Mock-ready dashboard
+                Готово к тренировкам
               </p>
               <h2 className="mt-3 text-2xl font-semibold text-slate-900">
-                Everything students need for consistent practice.
+                Все, что нужно для регулярной подготовки.
               </h2>
             </div>
             <div className="flex gap-3">
@@ -100,13 +99,13 @@ export default function HomePage() {
                 href="/score-calculator"
                 className="rounded-full bg-white px-5 py-2 text-sm font-semibold text-blue-700"
               >
-                Score Calculator
+                Калькулятор баллов
               </Link>
               <Link
                 href="/score-predictor"
                 className="rounded-full border border-blue-200 px-5 py-2 text-sm font-semibold text-blue-700"
               >
-                Score Predictor
+                Прогноз баллов
               </Link>
             </div>
           </div>
@@ -232,55 +231,55 @@ export default function HomePage() {
               BilimBridge
             </p>
             <p className="text-sm text-slate-600">
-              Focused prep for NIS, BIL, and RFMSH with mock tests and clear
-              progress tracking.
+              Подготовка к НИШ, БИЛ и РФМШ с пробными тестами и понятным
+              прогрессом.
             </p>
           </div>
           <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             <div>
-              <p className="text-sm font-semibold text-slate-900">Services</p>
+              <p className="text-sm font-semibold text-slate-900">Сервисы</p>
               <ul className="mt-3 space-y-2 text-sm text-slate-600">
                 <li>
                   <Link href="/practice" className="hover:text-blue-700">
-                    Practice Tests
+                    Пробные тесты
                   </Link>
                 </li>
                 <li>
                   <Link href="/question-bank" className="hover:text-blue-700">
-                    Question Bank
+                    Банк вопросов
                   </Link>
                 </li>
                 <li>
                   <Link href="/score-calculator" className="hover:text-blue-700">
-                    Score Calculator
+                    Калькулятор баллов
                   </Link>
                 </li>
                 <li>
                   <Link href="/score-predictor" className="hover:text-blue-700">
-                    Score Predictor
+                    Прогноз баллов
                   </Link>
                 </li>
                 <li>
                   <Link href="/reviews" className="hover:text-blue-700">
-                    Reviews
+                    Отзывы
                   </Link>
                 </li>
               </ul>
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-900">Resources</p>
+              <p className="text-sm font-semibold text-slate-900">Материалы</p>
               <ul className="mt-3 space-y-2 text-sm text-slate-600">
-                <li>Exam tips</li>
-                <li>Weekly study plan</li>
-                <li>Parent guidance</li>
+                <li>Советы по экзаменам</li>
+                <li>План занятий на неделю</li>
+                <li>Памятка для родителей</li>
               </ul>
             </div>
             <div>
-              <p className="text-sm font-semibold text-slate-900">Contacts</p>
+              <p className="text-sm font-semibold text-slate-900">Контакты</p>
               <ul className="mt-3 space-y-2 text-sm text-slate-600">
-                <li>Instagram — soon</li>
-                <li>Telegram — soon</li>
-                <li>Email: hello@bilimbridge.kz</li>
+                <li>Instagram — скоро</li>
+                <li>Telegram — скоро</li>
+                <li>Почта: hello@bilimbridge.kz</li>
               </ul>
             </div>
           </div>

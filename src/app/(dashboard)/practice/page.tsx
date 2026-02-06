@@ -39,14 +39,14 @@ export default function PracticePage() {
   return (
     <section className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">Practice Tests</h1>
+        <h1 className="text-2xl font-semibold text-slate-900">Пробные тесты</h1>
         <p className="mt-2 text-sm text-slate-600">
-          Answer each question and track your progress. Mock data only.
+          Отвечайте на вопросы и следите за прогрессом. Данные учебные.
         </p>
       </div>
 
       <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
-        Progress: {progress}% ({currentIndex + 1}/{totalQuestions})
+        Прогресс: {progress}% ({currentIndex + 1}/{totalQuestions})
         <div className="mt-3 h-2 w-full rounded-full bg-slate-100">
           <div
             className="h-2 rounded-full bg-blue-600 transition-all"
@@ -69,7 +69,7 @@ export default function PracticePage() {
           disabled={currentIndex === 0}
           className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Previous
+          Назад
         </button>
         <button
           onClick={() =>
@@ -78,20 +78,20 @@ export default function PracticePage() {
           disabled={isLastQuestion}
           className="rounded-full bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          Next
+          Дальше
         </button>
       </div>
 
       {isLastQuestion ? (
         <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6">
           <h2 className="text-lg font-semibold text-slate-900">
-            Mock Results
+            Результаты
           </h2>
           <p className="mt-2 text-sm text-slate-600">
-            Total questions: {totalQuestions}
+            Всего вопросов: {totalQuestions}
           </p>
           <p className="mt-1 text-sm text-slate-600">
-            Correct: {results.correct} · Incorrect: {results.incorrect}
+            Правильно: {results.correct} · Неправильно: {results.incorrect}
           </p>
         </div>
       ) : null}

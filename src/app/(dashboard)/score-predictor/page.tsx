@@ -21,17 +21,17 @@ export default function ScorePredictorPage() {
     <section className="flex flex-col gap-6">
       <div>
         <h1 className="text-2xl font-semibold text-slate-900">
-          Score Predictor
+          Прогноз баллов
         </h1>
         <p className="mt-2 text-sm text-slate-600">
-          Estimate your next mock score based on recent accuracy.
+          Оцените результат по вашей недавней точности.
         </p>
       </div>
       <div className="grid gap-6 lg:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
           <form className="flex flex-col gap-4 text-sm text-slate-700">
             <label className="flex flex-col gap-2">
-              Recent accuracy (%)
+              Точность (%) за последнее время
               <input
                 type="number"
                 min={0}
@@ -44,7 +44,7 @@ export default function ScorePredictorPage() {
               />
             </label>
             <label className="flex flex-col gap-2">
-              Total questions in test
+              Всего вопросов в тесте
               <input
                 type="number"
                 min={10}
@@ -59,16 +59,16 @@ export default function ScorePredictorPage() {
         </div>
         <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6">
           <p className="text-sm font-semibold uppercase tracking-widest text-emerald-700">
-            Predicted outcome
+            Прогноз
           </p>
           <div className="mt-4 text-4xl font-semibold text-slate-900">
-            {predicted.score} points
+            {predicted.score} баллов
           </div>
           <p className="mt-3 text-sm text-slate-600">
-            Correct: {predicted.correct} · Incorrect: {predicted.incorrect}
+            Правильно: {predicted.correct} · Неправильно: {predicted.incorrect}
           </p>
           <div className="mt-6 rounded-2xl bg-white p-4 text-sm text-slate-600">
-            Use this to set a realistic target for the next mock test.
+            Используйте это, чтобы поставить реальную цель на следующий тест.
           </div>
         </div>
       </div>
