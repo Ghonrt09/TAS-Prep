@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function HomePage() {
-  const { t } = useLanguage();
+  const { t, language, setLanguage } = useLanguage();
 
   const features = [
     { title: t("feature1Title"), description: t("feature1Body") },
@@ -263,6 +263,35 @@ export default function HomePage() {
                 <li>{t("footerContactTelegram")}</li>
                 <li>{t("footerContactEmail")}</li>
               </ul>
+            </div>
+          </div>
+        </div>
+        <div className="border-t border-slate-200">
+          <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 text-xs text-slate-500 sm:px-6 lg:px-8">
+            <span>Язык / Тіл</span>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setLanguage("ru")}
+                className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                  language === "ru"
+                    ? "bg-blue-600 text-white"
+                    : "border border-slate-200 text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                RU
+              </button>
+              <button
+                type="button"
+                onClick={() => setLanguage("kk")}
+                className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                  language === "kk"
+                    ? "bg-blue-600 text-white"
+                    : "border border-slate-200 text-slate-600 hover:text-slate-900"
+                }`}
+              >
+                KZ
+              </button>
             </div>
           </div>
         </div>

@@ -105,7 +105,7 @@ export default function Navbar() {
             </Link>
           ))}
         </nav>
-        <div className="hidden items-center gap-2 lg:flex">
+        <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setLanguage("ru")}
