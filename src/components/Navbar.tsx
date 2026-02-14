@@ -62,13 +62,13 @@ export default function Navbar() {
   return (
     <header className="border-b border-slate-200 bg-white/80 backdrop-blur">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" className="flex shrink-0 items-center gap-3">
           <Image
             src="/tas-prep-logo.png"
             alt="TAS Prep"
-            width={160}
-            height={160}
-            className="h-36 w-36 sm:h-40 sm:w-40"
+            width={180}
+            height={80}
+            className="h-14 w-auto object-contain sm:h-16"
             priority
           />
         </Link>
