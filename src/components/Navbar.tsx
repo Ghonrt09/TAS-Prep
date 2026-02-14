@@ -66,9 +66,9 @@ export default function Navbar() {
           <Image
             src="/tas-prep-logo.png"
             alt="TAS Prep"
-            width={180}
-            height={80}
-            className="h-14 w-auto object-contain sm:h-16"
+            width={400}
+            height={180}
+            className="!h-28 min-h-[7rem] w-auto max-w-[280px] object-contain sm:!h-36 sm:min-h-[9rem] sm:max-w-[320px] md:!h-40 md:min-h-[10rem] md:max-w-[360px]"
             priority
           />
         </Link>
