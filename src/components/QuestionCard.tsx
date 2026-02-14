@@ -16,13 +16,20 @@ export default function QuestionCard({
 }: QuestionCardProps) {
   const { t } = useLanguage();
 
-  // UI-only component for rendering a single question.
   return (
     <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+      {/* Полный текст для чтения (Текст 1, Текст 2 и т.д.) — прокручивается при длинном содержании */}
+      {question.passage && (
+        <div className="mb-6 max-h-[280px] overflow-y-auto rounded-xl border border-slate-100 bg-slate-50 px-4 py-3">
+          <p className="whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
+            {question.passage}
+          </p>
+        </div>
+      )}
       <p className="text-sm font-semibold uppercase tracking-widest text-slate-400">
         {t("questionPrompt")}
       </p>
-      <h2 className="mt-3 text-xl font-semibold text-slate-900">
+      <h2 className="mt-3 break-words text-xl font-semibold text-slate-900">
         {question.question}
       </h2>
       <div className="mt-6 grid gap-3">
