@@ -1,10 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 
 import { useLanguage } from "@/context/LanguageContext";
+import { useMobileMenu } from "@/context/MobileMenuContext";
 
 const navLinks = [
   { href: "/practice", key: "navPractice" },
@@ -41,6 +41,7 @@ const formatCountdown = (targetDate: Date, now: number) => {
 export default function Navbar() {
   const [now, setNow] = useState(() => Date.now());
   const { language, setLanguage, t } = useLanguage();
+  const { openMenu } = useMobileMenu();
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -61,17 +62,28 @@ export default function Navbar() {
 
   return (
     <header className="border-b border-slate-200 bg-white/80 backdrop-blur">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-6 px-4 py-4 sm:px-6 lg:px-8">
-        <Link href="/" className="flex shrink-0 items-center gap-3">
-          <Image
-            src="/tas-prep-logo.png"
-            alt="TAS Prep"
-            width={400}
-            height={180}
-            className="!h-28 min-h-[7rem] w-auto max-w-[280px] object-contain sm:!h-36 sm:min-h-[9rem] sm:max-w-[320px] md:!h-40 md:min-h-[10rem] md:max-w-[360px]"
-            priority
-          />
-        </Link>
+      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-2 px-4 py-3 sm:gap-6 sm:px-6 sm:py-4 lg:px-8">
+        <div className="flex shrink-0 items-center gap-3">
+          <button
+            type="button"
+            onClick={openMenu}
+            className="flex size-10 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 lg:hidden"
+            aria-label="Открыть меню"
+          >
+            <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <Link href="/" className="flex shrink-0 items-center gap-2">
+            <img
+              src="/tas-prep-logo.png"
+              alt="BilimBridge"
+              className="object-contain"
+              style={{ height: "clamp(36px, 10vw, 160px)", width: "auto" }}
+              fetchPriority="high"
+            />
+          </Link>
+        </div>
         <div className="flex flex-1 flex-col items-center gap-2">
           {timers.map((timer) => {
             const countdown = formatCountdown(timer.date, now);

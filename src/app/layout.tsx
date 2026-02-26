@@ -2,8 +2,10 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import MobileMenuDrawer from "@/components/MobileMenuDrawer";
 import { AuthProvider } from "@/context/AuthContext";
 import { LanguageProvider } from "@/context/LanguageContext";
+import { MobileMenuProvider } from "@/context/MobileMenuContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,10 +35,13 @@ export default function RootLayout({
       >
         <LanguageProvider>
           <AuthProvider>
-            <div className="min-h-screen">
-              <Navbar />
-              <main>{children}</main>
-            </div>
+            <MobileMenuProvider>
+              <div className="min-h-screen">
+                <Navbar />
+                <MobileMenuDrawer />
+                <main>{children}</main>
+              </div>
+            </MobileMenuProvider>
           </AuthProvider>
         </LanguageProvider>
       </body>

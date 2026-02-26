@@ -5,11 +5,13 @@ export default function DashboardLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  // This wrapper keeps the sidebar and content aligned on dashboard pages.
+  // Узкая левая панель, основной контент растянут на всю ширину (как OnePrep).
   return (
-    <div className="mx-auto flex w-full max-w-6xl gap-6 px-4 py-8 sm:px-6 lg:px-8">
+    <div className="flex min-h-screen w-full">
       <Sidebar />
-      <div className="flex-1">{children}</div>
+      <main className="min-w-0 flex-1 px-4 py-8 sm:px-6 lg:px-8">
+        {children}
+      </main>
     </div>
   );
 }
