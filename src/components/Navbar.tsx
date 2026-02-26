@@ -88,17 +88,17 @@ export default function Navbar() {
           </Link>
         </div>
         {showTimers ? (
-          <div className="flex flex-1 flex-wrap items-center justify-center gap-1.5 sm:flex-col sm:gap-2">
+          <div className="flex flex-1 items-center justify-center gap-2 overflow-x-auto py-0.5 sm:flex-col sm:gap-2 sm:overflow-visible sm:py-0">
             {timers.map((timer) => {
               const countdown = formatCountdown(timer.date, now);
               return (
                 <div
                   key={timer.label}
-                  className="flex items-center justify-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-slate-700 shadow-sm sm:min-w-[180px] sm:gap-2 sm:px-4 sm:py-2 sm:text-xs"
+                  className="shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 shadow-sm sm:flex sm:min-w-[180px] sm:items-center sm:justify-center sm:gap-2 sm:px-4 sm:py-2 sm:text-xs"
                 >
-                  <span className="shrink-0 text-slate-500">
-                    {t("timerPrefix", { label: timer.label })}
-                  </span>
+                  <span className="text-slate-500">
+                    {timer.label}:
+                  </span>{" "}
                   <span className="font-mono tabular-nums text-slate-900">
                     {countdown.days}
                     {t("timerDays")} {countdown.hours}
