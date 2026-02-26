@@ -78,10 +78,18 @@ export default function Navbar() {
             </svg>
           </button>
           <Link href="/" className="flex shrink-0 items-center gap-2">
+            {/* Mobile: show cropped/zoomed mark so logo doesn't look tiny due to whitespace in PNG */}
             <img
               src="/tas-prep-logo.png"
               alt="BilimBridge"
-              className="h-14 w-auto object-contain sm:h-16 lg:h-20"
+              className="h-11 w-11 object-cover object-[50%_35%] scale-[1.55] sm:hidden"
+              fetchPriority="high"
+            />
+            {/* >= sm: show full logo */}
+            <img
+              src="/tas-prep-logo.png"
+              alt="BilimBridge"
+              className="hidden h-16 w-auto object-contain sm:block lg:h-20"
               fetchPriority="high"
             />
           </Link>
