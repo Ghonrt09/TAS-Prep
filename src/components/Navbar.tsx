@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 
 import { useLanguage } from "@/context/LanguageContext";
@@ -42,6 +43,8 @@ export default function Navbar() {
   const [now, setNow] = useState(() => Date.now());
   const { language, setLanguage, t } = useLanguage();
   const { openMenu } = useMobileMenu();
+  const pathname = usePathname();
+  const showTimers = pathname !== "/";
 
   useEffect(() => {
     const timer = window.setInterval(() => {
@@ -84,28 +87,32 @@ export default function Navbar() {
             />
           </Link>
         </div>
-        <div className="flex flex-1 flex-col items-center gap-2">
-          {timers.map((timer) => {
-            const countdown = formatCountdown(timer.date, now);
-            return (
-              <div
-                key={timer.label}
-                className="flex min-w-[180px] items-center justify-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-semibold text-slate-700 shadow-sm sm:min-w-[200px]"
-              >
-                <span className="text-slate-500">
-                  {t("timerPrefix", { label: timer.label })}
-                </span>
-                <span className="font-mono text-slate-900">
-                  {countdown.days}
-                  {t("timerDays")} {countdown.hours}
-                  {t("timerHours")} {countdown.minutes}
-                  {t("timerMinutes")} {countdown.seconds}
-                  {t("timerSeconds")}
-                </span>
-              </div>
-            );
-          })}
-        </div>
+        {showTimers ? (
+          <div className="flex flex-1 flex-wrap items-center justify-center gap-1.5 sm:flex-col sm:gap-2">
+            {timers.map((timer) => {
+              const countdown = formatCountdown(timer.date, now);
+              return (
+                <div
+                  key={timer.label}
+                  className="flex items-center justify-center gap-1 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-[10px] font-semibold text-slate-700 shadow-sm sm:min-w-[180px] sm:gap-2 sm:px-4 sm:py-2 sm:text-xs"
+                >
+                  <span className="shrink-0 text-slate-500">
+                    {t("timerPrefix", { label: timer.label })}
+                  </span>
+                  <span className="font-mono tabular-nums text-slate-900">
+                    {countdown.days}
+                    {t("timerDays")} {countdown.hours}
+                    {t("timerHours")} {countdown.minutes}
+                    {t("timerMinutes")} {countdown.seconds}
+                    {t("timerSeconds")}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex-1" />
+        )}
         <nav className="hidden items-center gap-4 text-sm font-medium text-slate-600 lg:flex">
           {navLinks.map((link) => (
             <Link
