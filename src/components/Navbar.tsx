@@ -81,8 +81,7 @@ export default function Navbar() {
             <img
               src="/tas-prep-logo.png"
               alt="BilimBridge"
-              className="object-contain"
-              style={{ height: "clamp(42px, 11vw, 160px)", width: "auto" }}
+              className="h-14 w-auto object-contain sm:h-16 lg:h-20"
               fetchPriority="high"
             />
           </Link>

@@ -72,7 +72,7 @@ export default function MobileMenuDrawer() {
             <img
               src="/tas-prep-logo.png"
               alt="BilimBridge"
-              className="h-9 w-auto object-contain"
+              className="h-12 w-auto object-contain"
               fetchPriority="high"
             />
             <span className="text-lg font-semibold text-slate-900">BilimBridge</span>
