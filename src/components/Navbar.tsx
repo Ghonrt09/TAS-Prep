@@ -65,7 +65,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white shadow-sm">
-      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-2 px-4 py-2.5 sm:gap-4 sm:px-6 sm:py-3 lg:px-8">
+      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-2 py-2.5 pl-3 pr-4 sm:gap-4 sm:py-3 sm:pl-4 sm:pr-6 lg:pl-5 lg:pr-8">
         <div className="flex shrink-0 items-center gap-3">
           <button
             type="button"
@@ -81,7 +81,7 @@ export default function Navbar() {
             <img
               src="/tas-prep-logo.png"
               alt="BilimBridge"
-              className="h-12 w-auto object-contain sm:h-14 lg:h-16"
+              className="h-14 w-auto object-contain sm:h-16 lg:h-20"
               fetchPriority="high"
             />
           </Link>
