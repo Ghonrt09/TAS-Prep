@@ -154,13 +154,13 @@ export default function Navbar() {
           >
             KZ
           </button>
+          <Link
+            href="/auth"
+            className="flex items-center rounded-full bg-blue-600 px-4 py-1.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
+          >
+            {t("navSignIn")}
+          </Link>
         </div>
-        <Link
-          href="/auth"
-          className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
-        >
-          {t("navSignIn")}
-        </Link>
         </div>
       </div>
     </header>
