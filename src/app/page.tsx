@@ -58,6 +58,20 @@ export default function HomePage() {
               {t("heroCtaQuestionBank")}
             </Link>
           </div>
+          <div className="flex flex-wrap items-center gap-3 pt-2 text-sm text-slate-500">
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
+              Бесплатные тесты
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-blue-500" />
+              Онлайн
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+              5–6 класс
+            </span>
+          </div>
         </div>
         <div className="grid gap-6 md:grid-cols-3">
           {features.map((feature) => (

@@ -64,8 +64,8 @@ export default function Navbar() {
   );
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-slate-50/95 shadow-md backdrop-blur-md">
-      <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-2 px-4 py-3 sm:gap-6 sm:px-6 sm:py-4 lg:px-8">
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white shadow-sm">
+      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-2 px-4 py-2.5 sm:gap-4 sm:px-6 sm:py-3 lg:px-8">
         <div className="flex shrink-0 items-center gap-3">
           <button
             type="button"
@@ -81,7 +81,7 @@ export default function Navbar() {
             <img
               src="/tas-prep-logo.png"
               alt="BilimBridge"
-              className="h-16 w-auto object-contain sm:h-20 lg:h-28"
+              className="h-12 w-auto object-contain sm:h-14 lg:h-16"
               fetchPriority="high"
             />
           </Link>
@@ -110,7 +110,11 @@ export default function Navbar() {
             })}
           </div>
         ) : (
-          <div className="flex-1" />
+          <div className="flex flex-1 items-center justify-center">
+            <p className="hidden text-center text-xs font-medium text-blue-600 sm:block lg:text-sm">
+              Подготовка к НИШ, БИЛ и РФМШ
+            </p>
+          </div>
         )}
         <nav className="hidden items-center gap-1 text-sm font-medium text-slate-600 lg:flex">
           {navLinks.map((link) => {
