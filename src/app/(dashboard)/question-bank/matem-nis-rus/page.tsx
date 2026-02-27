@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { useLanguage } from "@/context/LanguageContext";
 import { MathText } from "@/components/MathText";
@@ -23,16 +23,19 @@ type QuestionItem = {
   passage?: string;
 };
 
-type MathemNisData = {
-  detail?: DetailItem[];
-  pages?: unknown[];
-  total_count?: number;
-  success_count?: number;
-} | QuestionItem[];
+type MathemNisData =
+  | {
+      detail?: DetailItem[];
+      pages?: unknown[];
+      total_count?: number;
+      success_count?: number;
+    }
+  | QuestionItem[];
 
 function buildQuestionsFromDetail(detail: DetailItem[]): (DetailItem & QuestionItem)[] {
   const result: (DetailItem & QuestionItem)[] = [];
   let current: (DetailItem & QuestionItem) | null = null;
+  const answerKeyRegex = /^(\d+)\.\s*[A-EА-Е]\b/;
 
   detail.forEach((item) => {
     const rawText = item.text ?? "";
@@ -42,6 +45,11 @@ function buildQuestionsFromDetail(detail: DetailItem[]): (DetailItem & QuestionI
     const isQuestion = /^\d+[\).\s]/.test(text);
     // Варианты ответов помечены буквами A)–E) (латиница и кириллица).
     const isOption = /^[A-EА-Е]\)/.test(text);
+
+    // Строки вида "33. C ..." — это ключ ответов; на странице их не показываем.
+    if (answerKeyRegex.test(text)) {
+      return;
+    }
 
     if (isQuestion) {
       current = {
@@ -75,6 +83,7 @@ export default function MathemNisRusPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
+  const [showResults, setShowResults] = useState(false);
 
   useEffect(() => {
     fetch("/data/Матем%20НИШ%20РУС.json")
@@ -108,6 +117,59 @@ export default function MathemNisRusPage() {
   const list: (DetailItem & QuestionItem)[] = isArray
     ? (data as QuestionItem[])
     : buildQuestionsFromDetail(detailArray);
+
+  // Ключ ответов из абзацев вида "33. C ..." в конце файла
+  const answerKey = useMemo(() => {
+    const map: Record<number, string> = {};
+    const regex = /^(\d+)\.\s*([A-EА-Е])/;
+    const letterMap: Record<string, string> = {
+      А: "A",
+      Б: "B",
+      В: "C",
+      Г: "D",
+      Д: "E",
+      Е: "E",
+    };
+
+    detailArray.forEach((item) => {
+      const text = (item.text ?? "").trim();
+      const match = regex.exec(text);
+      if (!match) return;
+      const num = Number(match[1]);
+      const rawLetter = match[2].toUpperCase();
+      const letter = letterMap[rawLetter] ?? rawLetter;
+      if (num > 0) {
+        map[num] = letter;
+      }
+    });
+
+    return map;
+  }, [detailArray]);
+
+  const questionsWithOptions = list.filter(
+    (q) =>
+      (q as QuestionItem).question &&
+      (q as QuestionItem).options &&
+      (q as QuestionItem).options!.length > 0
+  );
+
+  const totalQuestions = questionsWithOptions.length;
+
+  const correctCount = useMemo(() => {
+    if (!showResults) return 0;
+    let correct = 0;
+    questionsWithOptions.forEach((q, index) => {
+      const qItem = q as QuestionItem;
+      const id = qItem.id ?? index + 1;
+      const key = id.toString();
+      const selectedLetter = selectedOptions[key];
+      const correctLetter = answerKey[id];
+      if (selectedLetter && correctLetter && selectedLetter === correctLetter) {
+        correct += 1;
+      }
+    });
+    return correct;
+  }, [answerKey, questionsWithOptions, selectedOptions, showResults]);
 
   return (
     <section className="flex flex-col gap-6">
@@ -154,7 +216,8 @@ export default function MathemNisRusPage() {
             {list.map((item, index) => {
               const q = item as QuestionItem & DetailItem;
               const hasQuestion = "question" in q && q.question;
-              const questionKey = ((q as QuestionItem).id ?? index).toString();
+              const questionId = (q as QuestionItem).id ?? index + 1;
+              const questionKey = questionId.toString();
               const options = (q as QuestionItem).options ?? [];
               const selected = selectedOptions[questionKey];
 
@@ -171,9 +234,9 @@ export default function MathemNisRusPage() {
                   {options.length > 0 && (
                     <div className="mt-3 flex flex-col gap-1.5">
                       {options.map((opt, i) => {
-                        const isSelected = selected === opt;
                         const letters = ["A", "B", "C", "D", "E", "F", "G"];
                         const letter = letters[i] ?? "?";
+                        const isSelected = selected === letter;
                         return (
                           <button
                             key={i}
@@ -181,7 +244,7 @@ export default function MathemNisRusPage() {
                             onClick={() =>
                               setSelectedOptions((prev) => ({
                                 ...prev,
-                                [questionKey]: opt,
+                                [questionKey]: letter,
                               }))
                             }
                             className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-sm transition ${
@@ -206,6 +269,24 @@ export default function MathemNisRusPage() {
                 </div>
               );
             })}
+            {totalQuestions > 0 && (
+              <div className="mt-6 flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowResults(true)}
+                  className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+                >
+                  Завершить тест
+                </button>
+                {showResults && (
+                  <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
+                    <p>
+                      Вопросов: {totalQuestions}, правильных ответов: {correctCount}.
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
         </>
       )}
