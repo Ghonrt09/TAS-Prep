@@ -162,11 +162,6 @@ export default function MathemNisRusPage() {
                   key={(q as DetailItem).paragraph_id ?? (q as QuestionItem).id ?? index}
                   className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
                 >
-                  {(q as DetailItem).type && (
-                    <span className="mb-2 block text-xs font-medium uppercase text-slate-400">
-                      {(q as DetailItem).type}
-                    </span>
-                  )}
                   {hasQuestion && (
                     <p className="font-medium text-slate-900">{(q as QuestionItem).question}</p>
                   )}
@@ -174,6 +169,8 @@ export default function MathemNisRusPage() {
                     <div className="mt-3 flex flex-col gap-1.5">
                       {options.map((opt, i) => {
                         const isSelected = selected === opt;
+                        const letters = ["A", "B", "C", "D", "E", "F", "G"];
+                        const letter = letters[i] ?? "?";
                         return (
                           <button
                             key={i}
@@ -190,6 +187,7 @@ export default function MathemNisRusPage() {
                                 : "border-slate-200 text-slate-700 hover:border-blue-200 hover:bg-slate-50"
                             }`}
                           >
+                            <span className="mr-2 font-semibold">{letter}.</span>
                             <MathText text={opt} />
                           </button>
                         );
