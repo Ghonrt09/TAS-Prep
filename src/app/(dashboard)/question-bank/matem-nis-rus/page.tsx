@@ -40,7 +40,8 @@ function buildQuestionsFromDetail(detail: DetailItem[]): (DetailItem & QuestionI
     if (!text) return;
 
     const isQuestion = /^\d+[\).\s]/.test(text);
-    const isOption = /^[A-DА-Г]\)/.test(text);
+    // Варианты ответов помечены буквами A)–E) (латиница и кириллица).
+    const isOption = /^[A-EА-Е]\)/.test(text);
 
     if (isQuestion) {
       current = {
