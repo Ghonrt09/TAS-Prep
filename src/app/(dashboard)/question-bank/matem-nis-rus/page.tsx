@@ -163,7 +163,9 @@ export default function MathemNisRusPage() {
                   className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
                 >
                   {hasQuestion && (
-                    <p className="font-medium text-slate-900">{(q as QuestionItem).question}</p>
+                    <div className="font-medium text-slate-900">
+                      <MathText text={(q as QuestionItem).question ?? ""} />
+                    </div>
                   )}
                   {options.length > 0 && (
                     <div className="mt-3 flex flex-col gap-1.5">
@@ -181,13 +183,13 @@ export default function MathemNisRusPage() {
                                 [questionKey]: opt,
                               }))
                             }
-                            className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition ${
+                            className={`flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-sm transition ${
                               isSelected
                                 ? "border-blue-600 bg-blue-50 text-blue-700"
                                 : "border-slate-200 text-slate-700 hover:border-blue-200 hover:bg-slate-50"
                             }`}
                           >
-                            <span className="mr-2 font-semibold">{letter}.</span>
+                            <span className="font-semibold">{letter}.</span>
                             <MathText text={opt} />
                           </button>
                         );
