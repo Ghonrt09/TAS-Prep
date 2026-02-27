@@ -35,6 +35,7 @@ export default function MathemNisRusPage() {
   const [data, setData] = useState<MathemNisData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({});
 
   useEffect(() => {
     fetch("/data/Матем%20НИШ%20РУС.json")
@@ -114,6 +115,10 @@ export default function MathemNisRusPage() {
             {list.map((item, index) => {
               const q = item as QuestionItem & DetailItem;
               const hasQuestion = "question" in q && q.question;
+              const questionKey = ((q as QuestionItem).id ?? index).toString();
+              const options = (q as QuestionItem).options ?? [];
+              const selected = selectedOptions[questionKey];
+
               return (
                 <div
                   key={(q as DetailItem).paragraph_id ?? (q as QuestionItem).id ?? index}
@@ -127,14 +132,33 @@ export default function MathemNisRusPage() {
                   {hasQuestion && (
                     <p className="font-medium text-slate-900">{(q as QuestionItem).question}</p>
                   )}
-                  {(q as QuestionItem).options && (q as QuestionItem).options!.length > 0 && (
-                    <ul className="mt-2 list-inside list-disc text-sm text-slate-600">
-                      {(q as QuestionItem).options!.map((opt, i) => (
-                        <li key={i}>{opt}</li>
-                      ))}
-                    </ul>
+                  {options.length > 0 && (
+                    <div className="mt-3 flex flex-col gap-1.5">
+                      {options.map((opt, i) => {
+                        const isSelected = selected === opt;
+                        return (
+                          <button
+                            key={i}
+                            type="button"
+                            onClick={() =>
+                              setSelectedOptions((prev) => ({
+                                ...prev,
+                                [questionKey]: opt,
+                              }))
+                            }
+                            className={`w-full rounded-lg border px-3 py-2 text-left text-sm transition ${
+                              isSelected
+                                ? "border-blue-600 bg-blue-50 text-blue-700"
+                                : "border-slate-200 text-slate-700 hover:border-blue-200 hover:bg-slate-50"
+                            }`}
+                          >
+                            <MathText text={opt} />
+                          </button>
+                        );
+                      })}
+                    </div>
                   )}
-                  {(q as DetailItem).text && !hasQuestion && (
+                  {(q as DetailItem).text && !hasQuestion && options.length === 0 && (
                     <MathText text={(q as DetailItem).text ?? ""} />
                   )}
                   {(q as DetailItem).page_id != null && (
