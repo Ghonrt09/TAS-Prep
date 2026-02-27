@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 
 import { useLanguage } from "@/context/LanguageContext";
+import { MathText } from "@/components/MathText";
 
 type DetailItem = {
   position?: number;
@@ -134,7 +135,7 @@ export default function MathemNisRusPage() {
                     </ul>
                   )}
                   {(q as DetailItem).text && !hasQuestion && (
-                    <p className="whitespace-pre-wrap text-slate-700">{(q as DetailItem).text}</p>
+                    <MathText text={(q as DetailItem).text ?? ""} />
                   )}
                   {(q as DetailItem).page_id != null && (
                     <p className="mt-2 text-xs text-slate-400">Страница {(q as DetailItem).page_id}</p>
