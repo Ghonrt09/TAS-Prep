@@ -154,10 +154,10 @@ export default function Navbar() {
           >
             KZ
           </button>
-          <div className="flex h-9 shrink-0 items-center">
+          <div className="ml-4 flex h-9 shrink-0 items-center">
             <Link
               href="/auth"
-              className="flex h-9 min-w-0 items-center justify-center rounded-full bg-blue-600 px-4 text-sm font-semibold leading-none text-white no-underline shadow-sm transition-colors hover:bg-blue-700"
+              className="flex h-9 min-w-0 items-center justify-center rounded-lg bg-blue-600 px-5 text-sm font-semibold leading-none text-white no-underline shadow-sm transition-colors hover:bg-blue-700"
             >
               {t("navSignIn")}
             </Link>
