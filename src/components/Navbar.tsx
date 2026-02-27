@@ -65,8 +65,9 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white shadow-sm">
-      <div className="mx-auto flex w-full max-w-5xl items-center justify-between gap-2 py-2.5 pl-3 pr-4 sm:gap-4 sm:py-3 sm:pl-4 sm:pr-6 lg:pl-5 lg:pr-8">
-        <div className="flex shrink-0 items-center gap-3">
+      <div className="flex w-full items-center gap-2 py-2.5 sm:gap-4 sm:py-3">
+        {/* Логотип прижат к левому краю экрана */}
+        <div className="flex shrink-0 items-center gap-3 pl-4 pr-2 sm:pl-6 sm:pr-3 lg:pl-8">
           <button
             type="button"
             onClick={openMenu}
@@ -87,6 +88,7 @@ export default function Navbar() {
           </Link>
         </div>
         <div className="hidden shrink-0 lg:block lg:min-w-[4rem]" aria-hidden />
+        <div className="flex min-w-0 flex-1 items-center justify-between pr-4 sm:pr-6 lg:pr-8">
         {showTimers ? (
           <div className="flex flex-1 items-center justify-center gap-2 overflow-x-auto py-0.5 sm:flex-col sm:gap-2 sm:overflow-visible sm:py-0">
             {timers.map((timer) => {
@@ -159,6 +161,7 @@ export default function Navbar() {
         >
           {t("navSignIn")}
         </Link>
+        </div>
       </div>
     </header>
   );
