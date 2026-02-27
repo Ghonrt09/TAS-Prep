@@ -64,32 +64,24 @@ export default function Navbar() {
   );
 
   return (
-    <header className="border-b border-slate-200 bg-white/80 backdrop-blur">
+    <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 shadow-sm backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-2 px-4 py-3 sm:gap-6 sm:px-6 sm:py-4 lg:px-8">
         <div className="flex shrink-0 items-center gap-3">
           <button
             type="button"
             onClick={openMenu}
-            className="flex size-10 items-center justify-center rounded-lg text-slate-600 hover:bg-slate-100 lg:hidden"
+            className="flex size-10 items-center justify-center rounded-xl text-slate-600 transition-colors hover:bg-blue-50 hover:text-blue-600 lg:hidden"
             aria-label="Открыть меню"
           >
             <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <Link href="/" className="flex shrink-0 items-center gap-2">
-            {/* Mobile: show cropped/zoomed mark so logo doesn't look tiny due to whitespace in PNG */}
+          <Link href="/" className="flex shrink-0 items-center gap-2 rounded-lg transition-opacity hover:opacity-90">
             <img
               src="/tas-prep-logo.png"
               alt="BilimBridge"
-              className="h-11 w-11 object-cover object-[50%_35%] scale-[1.55] sm:hidden"
-              fetchPriority="high"
-            />
-            {/* >= sm: show full logo */}
-            <img
-              src="/tas-prep-logo.png"
-              alt="BilimBridge"
-              className="hidden h-16 w-auto object-contain sm:block lg:h-20"
+              className="h-16 w-auto object-contain sm:h-20 lg:h-28"
               fetchPriority="high"
             />
           </Link>
@@ -101,7 +93,7 @@ export default function Navbar() {
               return (
                 <div
                   key={timer.label}
-                  className="shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-white px-2 py-1 text-[10px] font-semibold text-slate-700 shadow-sm sm:flex sm:min-w-[180px] sm:items-center sm:justify-center sm:gap-2 sm:px-4 sm:py-2 sm:text-xs"
+                  className="shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-slate-50/80 px-2 py-1 text-[10px] font-semibold text-slate-700 shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50/50 sm:flex sm:min-w-[180px] sm:items-center sm:justify-center sm:gap-2 sm:px-4 sm:py-2 sm:text-xs"
                 >
                   <span className="text-slate-500">
                     {timer.label}:
@@ -120,25 +112,30 @@ export default function Navbar() {
         ) : (
           <div className="flex-1" />
         )}
-        <nav className="hidden items-center gap-4 text-sm font-medium text-slate-600 lg:flex">
-          {navLinks.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="transition hover:text-slate-900"
-            >
-              {t(link.key)}
-            </Link>
-          ))}
+        <nav className="hidden items-center gap-1 text-sm font-medium text-slate-600 lg:flex">
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`rounded-lg px-3 py-2 transition-colors hover:bg-slate-100 hover:text-slate-900 ${
+                  isActive ? "bg-blue-50 font-semibold text-blue-700" : ""
+                }`}
+              >
+                {t(link.key)}
+              </Link>
+            );
+          })}
         </nav>
         <div className="flex items-center gap-2">
           <button
             type="button"
             onClick={() => setLanguage("ru")}
-            className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+            className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
               language === "ru"
-                ? "bg-blue-600 text-white"
-                : "border border-slate-200 text-slate-600 hover:text-slate-900"
+                ? "bg-blue-600 text-white shadow-sm"
+                : "border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             }`}
           >
             RU
@@ -146,10 +143,10 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setLanguage("kk")}
-            className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+            className={`rounded-full px-3 py-1.5 text-xs font-semibold transition-colors ${
               language === "kk"
-                ? "bg-blue-600 text-white"
-                : "border border-slate-200 text-slate-600 hover:text-slate-900"
+                ? "bg-blue-600 text-white shadow-sm"
+                : "border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
             }`}
           >
             KZ
@@ -157,7 +154,7 @@ export default function Navbar() {
         </div>
         <Link
           href="/auth"
-          className="rounded-full border border-blue-200 bg-blue-50 px-4 py-2 text-sm font-semibold text-blue-700 shadow-sm transition hover:bg-blue-100"
+          className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-blue-700"
         >
           {t("navSignIn")}
         </Link>
