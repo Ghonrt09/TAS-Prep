@@ -42,19 +42,19 @@ function buildQuestionsFromDetail(detail: DetailItem[]): (DetailItem & QuestionI
     const text = rawText.trim();
     if (!text) return;
 
-    const page = item.page_id ?? 0;
-
-    // Страницы с ключами и пояснениями (10+ в исходном файле) не отображаем как отдельные блоки
-    if (page >= 10) {
-      return;
-    }
-
     const isQuestion = /^\d+[\).\s]/.test(text);
     // Варианты ответов помечены буквами A)–E) (латиница и кириллица).
     const isOption = /^[A-EА-Е]\)/.test(text);
 
     // Строки вида "33. C ..." — это ключ ответов; на странице их не показываем.
     if (answerKeyRegex.test(text)) {
+      return;
+    }
+
+    const page = item.page_id ?? 0;
+    // На страницах 10–12 оставляем только сами вопросы, варианты и ключи,
+    // а пояснительные абзацы и заголовки пропускаем.
+    if (page >= 10 && !isQuestion && !isOption) {
       return;
     }
 
