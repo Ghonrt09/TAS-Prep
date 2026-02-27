@@ -86,6 +86,7 @@ export default function Navbar() {
             />
           </Link>
         </div>
+        <div className="hidden shrink-0 lg:block lg:min-w-[4rem]" aria-hidden />
         {showTimers ? (
           <div className="flex flex-1 items-center justify-center gap-2 overflow-x-auto py-0.5 sm:flex-col sm:gap-2 sm:overflow-visible sm:py-0">
             {timers.map((timer) => {
@@ -110,13 +111,9 @@ export default function Navbar() {
             })}
           </div>
         ) : (
-          <div className="flex flex-1 items-center justify-center">
-            <p className="hidden text-center text-xs font-medium text-blue-600 sm:block lg:text-sm">
-              Подготовка к НИШ, БИЛ и РФМШ
-            </p>
-          </div>
+          <div className="flex-1" />
         )}
-        <nav className="hidden items-center gap-1 text-sm font-medium text-slate-600 lg:flex">
+        <nav className="hidden items-center gap-1 text-sm font-medium text-slate-600 lg:flex lg:ml-2">
           {navLinks.map((link) => {
             const isActive = pathname === link.href;
             return (
