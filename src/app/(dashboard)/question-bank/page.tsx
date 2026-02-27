@@ -1,5 +1,7 @@
 "use client";
 
+import Link from "next/link";
+
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function QuestionBankPage() {
@@ -9,21 +11,31 @@ export default function QuestionBankPage() {
       title: t("categoryArithmetic"),
       description: t("categoryArithmeticDesc"),
       questions: 120,
+      href: "/question-bank",
     },
     {
       title: t("categoryAlgebra"),
       description: t("categoryAlgebraDesc"),
       questions: 80,
+      href: "/question-bank",
     },
     {
       title: t("categoryLogic"),
       description: t("categoryLogicDesc"),
       questions: 95,
+      href: "/question-bank",
     },
     {
       title: t("categoryGeometry"),
       description: t("categoryGeometryDesc"),
       questions: 60,
+      href: "/question-bank",
+    },
+    {
+      title: t("categoryMatemNisRu"),
+      description: t("categoryMatemNisRuDesc"),
+      questions: 249,
+      href: "/question-bank/matem-nis-rus",
     },
   ];
 
@@ -39,9 +51,10 @@ export default function QuestionBankPage() {
       </div>
       <div className="grid gap-4 md:grid-cols-2">
         {categories.map((category) => (
-          <div
+          <Link
             key={category.title}
-            className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+            href={category.href}
+            className="block cursor-pointer rounded-2xl border border-slate-200 bg-white p-5 text-left shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50/30 hover:shadow-md"
           >
             <h2 className="text-lg font-semibold text-slate-900">
               {category.title}
@@ -51,11 +64,11 @@ export default function QuestionBankPage() {
             </p>
             <div className="mt-4 flex items-center justify-between text-xs text-slate-500">
               <span>{t("bankQuestions", { value: category.questions })}</span>
-              <button className="rounded-full border border-slate-200 px-3 py-1 text-xs font-semibold text-slate-600">
+              <span className="rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-600">
                 {t("bankOpen")}
-              </button>
+              </span>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
     </section>
