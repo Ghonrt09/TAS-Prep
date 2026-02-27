@@ -30,6 +30,43 @@ type MathemNisData = {
   success_count?: number;
 } | QuestionItem[];
 
+function buildQuestionsFromDetail(detail: DetailItem[]): (DetailItem & QuestionItem)[] {
+  const result: (DetailItem & QuestionItem)[] = [];
+  let current: (DetailItem & QuestionItem) | null = null;
+
+  detail.forEach((item) => {
+    const rawText = item.text ?? "";
+    const text = rawText.trim();
+    if (!text) return;
+
+    const isQuestion = /^\d+[\).\s]/.test(text);
+    const isOption = /^[A-DА-Г]\)/.test(text);
+
+    if (isQuestion) {
+      current = {
+        ...item,
+        id: result.length + 1,
+        question: text,
+        options: [],
+      };
+      result.push(current);
+      return;
+    }
+
+    if (isOption && current) {
+      const optionText = text.replace(/^[A-DА-Г]\)\s*/, "");
+      current.options = [...(current.options ?? []), optionText];
+      return;
+    }
+
+    // Отдельный абзац, не вопрос и не вариант — показываем как отдельный блок.
+    result.push({ ...item });
+    current = null;
+  });
+
+  return result;
+}
+
 export default function MathemNisRusPage() {
   const { t } = useLanguage();
   const [data, setData] = useState<MathemNisData | null>(null);
@@ -68,7 +105,7 @@ export default function MathemNisRusPage() {
 
   const list: (DetailItem & QuestionItem)[] = isArray
     ? (data as QuestionItem[])
-    : detailArray;
+    : buildQuestionsFromDetail(detailArray);
 
   return (
     <section className="flex flex-col gap-6">
