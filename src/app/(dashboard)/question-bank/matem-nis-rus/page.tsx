@@ -42,6 +42,13 @@ function buildQuestionsFromDetail(detail: DetailItem[]): (DetailItem & QuestionI
     const text = rawText.trim();
     if (!text) return;
 
+    const page = item.page_id ?? 0;
+
+    // Страницы с ключами и пояснениями (10+ в исходном файле) не отображаем как отдельные блоки
+    if (page >= 10) {
+      return;
+    }
+
     const isQuestion = /^\d+[\).\s]/.test(text);
     // Варианты ответов помечены буквами A)–E) (латиница и кириллица).
     const isOption = /^[A-EА-Е]\)/.test(text);
