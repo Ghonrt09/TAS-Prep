@@ -178,6 +178,11 @@ export default function MathemNisRusPage() {
     return correct;
   }, [answerKey, questionsWithOptions, selectedOptions, showResults]);
 
+  const totalInAnswerKey = useMemo(
+    () => Object.keys(answerKey).length,
+    [answerKey]
+  );
+
   return (
     <section className="flex flex-col gap-6">
       <div className="flex items-center gap-4">
@@ -216,6 +221,13 @@ export default function MathemNisRusPage() {
           <p className="text-sm text-slate-500">
             Загружено: {list.length} элементов.
           </p>
+          {totalInAnswerKey > 0 && (
+            <p className="text-xs text-slate-400">
+              В оригинальном варианте: {totalInAnswerKey} задач, в онлайн-версии:
+              {" "}
+              {totalQuestions} (часть заданий без вариантов ответа не участвует в тесте).
+            </p>
+          )}
           <div className="flex flex-col gap-3">
             {list.length === 0 && (
               <p className="text-slate-500">В файле нет элементов для отображения.</p>
