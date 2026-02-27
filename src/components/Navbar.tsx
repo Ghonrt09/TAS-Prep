@@ -64,7 +64,7 @@ export default function Navbar() {
   );
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200/80 bg-white/90 shadow-sm backdrop-blur-md">
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-slate-50/95 shadow-md backdrop-blur-md">
       <div className="mx-auto flex w-full max-w-6xl items-center justify-between gap-2 px-4 py-3 sm:gap-6 sm:px-6 sm:py-4 lg:px-8">
         <div className="flex shrink-0 items-center gap-3">
           <button
