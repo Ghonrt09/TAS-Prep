@@ -55,7 +55,8 @@ function buildQuestionsFromDetail(detail: DetailItem[]): (DetailItem & QuestionI
     }
 
     if (isOption && current) {
-      const optionText = text.replace(/^[A-DА-Г]\)\s*/, "");
+      // Убираем префикс \"A) \", \"B) \", ..., \"E) \" / \"А)\", ..., \"Е)\" из варианта
+      const optionText = text.replace(/^[A-EА-Е]\)\s*/, "");
       current.options = [...(current.options ?? []), optionText];
       return;
     }
