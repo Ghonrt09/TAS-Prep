@@ -81,7 +81,7 @@ export default function Navbar() {
           <Link href="/" className="flex shrink-0 items-center gap-2 rounded-lg transition-opacity hover:opacity-90">
             <img
               src="/tas-prep-logo.png"
-              alt="BilimBridge"
+              alt="TAS Prep"
               className="h-14 w-auto object-contain sm:h-16 lg:h-20"
               fetchPriority="high"
             />

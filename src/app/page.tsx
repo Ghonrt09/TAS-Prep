@@ -31,39 +31,52 @@ export default function HomePage() {
     },
   ];
 
+  const homeReviews = [
+    { name: t("reviewName1"), message: t("reviewMessage1") },
+    { name: t("reviewName2"), message: t("reviewMessage2") },
+  ];
+
   return (
     <div className="bg-slate-50">
-      <section className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-16 sm:px-6 lg:px-8 lg:py-24">
+      {/* Hero */}
+      <section className="relative mx-auto w-full max-w-6xl px-4 pt-12 pb-20 sm:px-6 lg:px-8 lg:pt-20 lg:pb-28">
+        <div className="absolute inset-0 -z-10 bg-gradient-to-br from-blue-50/80 via-slate-50 to-indigo-50/60" aria-hidden />
         <div className="flex flex-col gap-6">
-          <span className="w-fit rounded-full bg-amber-100 px-4 py-1 text-xs font-semibold uppercase tracking-widest text-amber-700">
+          <span className="w-fit rounded-full bg-amber-100 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-amber-700">
             {t("heroBadge")}
           </span>
-          <h1 className="max-w-2xl text-4xl font-semibold leading-tight text-slate-900 sm:text-5xl">
+          <h1 className="max-w-2xl text-4xl font-bold leading-tight tracking-tight text-slate-900 sm:text-5xl lg:text-[2.75rem]">
             {t("heroTitle")}
           </h1>
           <p className="max-w-2xl text-lg text-slate-600">
             {t("heroBody")}
           </p>
+          <p className="text-sm font-medium text-slate-500">
+            {t("heroProof")}
+          </p>
           <div className="flex flex-wrap gap-4">
             <Link
               href="/practice"
-              className="rounded-full bg-blue-700 px-6 py-3 text-sm font-semibold text-white transition hover:bg-blue-600"
+              className="rounded-full bg-blue-600 px-6 py-3.5 text-sm font-semibold text-white shadow-md transition hover:bg-blue-700 hover:shadow-lg"
             >
               {t("heroCtaPractice")}
             </Link>
             <Link
               href="/question-bank"
-              className="rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition hover:border-slate-300"
+              className="rounded-full border-2 border-slate-200 bg-white px-6 py-3.5 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
             >
               {t("heroCtaQuestionBank")}
             </Link>
           </div>
         </div>
+      </section>
+
+      <section className="mx-auto flex w-full max-w-6xl flex-col gap-10 px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid gap-6 md:grid-cols-3">
           {features.map((feature) => (
             <div
               key={feature.title}
-              className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+              className="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md hover:border-slate-300"
             >
               <h3 className="text-lg font-semibold text-slate-900">
                 {feature.title}
@@ -73,6 +86,39 @@ export default function HomePage() {
               </p>
             </div>
           ))}
+        </div>
+      </section>
+
+      {/* Отзывы на главной */}
+      <section className="mx-auto w-full max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="flex flex-col gap-6">
+          <div>
+            <h2 className="text-2xl font-semibold text-slate-900">
+              {t("homeReviewsTitle")}
+            </h2>
+            <p className="mt-1 text-sm text-slate-600">
+              {t("homeReviewsSubtitle")}
+            </p>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            {homeReviews.map((review) => (
+              <div
+                key={review.name}
+                className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+              >
+                <p className="text-slate-700">«{review.message}»</p>
+                <p className="mt-4 text-xs font-semibold uppercase tracking-wider text-slate-500">
+                  {review.name}
+                </p>
+              </div>
+            ))}
+          </div>
+          <Link
+            href="/reviews"
+            className="text-sm font-semibold text-blue-600 hover:text-blue-700"
+          >
+            {t("homeReviewsLink")} →
+          </Link>
         </div>
       </section>
 
@@ -201,11 +247,29 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* Для инвесторов */}
+      <section className="mx-auto w-full max-w-6xl px-4 pb-16 sm:px-6 lg:px-8">
+        <div className="rounded-3xl border border-slate-200 bg-slate-900 p-8 text-white shadow-lg">
+          <h2 className="text-xl font-semibold">
+            {t("forInvestorsTitle")}
+          </h2>
+          <p className="mt-3 max-w-2xl text-slate-300">
+            {t("forInvestorsBody")}
+          </p>
+          <a
+            href="mailto:hello@tasprep.com?subject=TAS%20Prep%20—%20инвестиции%20/%20партнёрство"
+            className="mt-5 inline-flex rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
+          >
+            {t("forInvestorsCta")}
+          </a>
+        </div>
+      </section>
+
       <footer className="border-t border-slate-200 bg-white">
         <div className="mx-auto grid w-full max-w-6xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.2fr_2.5fr] lg:px-8">
           <div className="space-y-4">
             <p className="text-lg font-semibold text-slate-900">
-              BilimBridge
+              TAS Prep
             </p>
             <p className="text-sm text-slate-600">
               {t("footerAbout")}
@@ -259,17 +323,43 @@ export default function HomePage() {
                 {t("footerContacts")}
               </p>
               <ul className="mt-3 space-y-2 text-sm text-slate-600">
-                <li>{t("footerContactInstagram")}</li>
-                <li>{t("footerContactTelegram")}</li>
-                <li>{t("footerContactEmail")}</li>
+                <li>
+                  <a
+                    href="https://instagram.com/tas.prep"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-blue-700 hover:underline"
+                  >
+                    {t("footerContactInstagram")}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://t.me/tasprep"
+                    target="_blank"
+                    rel="noreferrer"
+                    className="hover:text-blue-700 hover:underline"
+                  >
+                    {t("footerContactTelegram")}
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="mailto:hello@tasprep.com"
+                    className="hover:text-blue-700 hover:underline"
+                  >
+                    {t("footerContactEmail")}
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
         </div>
         <div className="border-t border-slate-200">
-          <div className="mx-auto flex w-full max-w-6xl items-center justify-between px-4 py-4 text-xs text-slate-500 sm:px-6 lg:px-8">
-            <span>Язык / Тіл</span>
+          <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-3 px-4 py-4 text-xs text-slate-500 sm:px-6 lg:px-8">
+            <span>{t("footerCopyright")}</span>
             <div className="flex items-center gap-2">
+              <span>Язык / Тіл</span>
               <button
                 type="button"
                 onClick={() => setLanguage("ru")}

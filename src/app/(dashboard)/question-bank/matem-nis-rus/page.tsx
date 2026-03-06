@@ -59,10 +59,17 @@ function buildQuestionsFromDetail(detail: DetailItem[]): (DetailItem & QuestionI
     }
 
     if (isQuestion) {
+      const questionText = text.replace(/^\d+\s*[.)]\s*/, "").trim();
+      const isExamCondition = /^(ПРОБНЫЙ ТЕСТ|БЛОК\s+\d|вопросов\.|Время выполнения|Рекомендуемое время|минут\.?)\s*$/i.test(questionText)
+        || /^\d+\s*вопросов\.\s*Время выполнения:\s*\d+\s*минут/i.test(questionText);
+      if (isExamCondition) {
+        current = null;
+        return;
+      }
       current = {
         ...item,
         id: result.length + 1,
-        question: text,
+        question: questionText,
         options: [],
       };
       result.push(current);
@@ -112,14 +119,26 @@ export default function MathemNisRusPage() {
   const isArray = Array.isArray(data);
 
   // В экспортированном JSON detail может быть не массивом, а объектом с числовыми ключами.
+  // Локальный файл может содержать только pages[].content[] — тогда собираем detail из pages.
   const rawDetail =
     !isArray && data && "detail" in data ? (data as { detail?: unknown }).detail : null;
 
-  const detailArray: DetailItem[] = Array.isArray(rawDetail)
+  let detailArray: DetailItem[] = Array.isArray(rawDetail)
     ? rawDetail
     : rawDetail && typeof rawDetail === "object"
     ? Object.values(rawDetail as Record<string, DetailItem>)
     : [];
+
+  if (detailArray.length === 0 && !isArray && data && "pages" in data) {
+    const pages = (data as { pages?: Array<{ page_id?: number; content?: Array<{ id?: number; text?: string }> }> }).pages ?? [];
+    detailArray = pages.flatMap((page) =>
+      (page.content ?? []).map((c) => ({
+        text: c.text,
+        page_id: page.page_id,
+        paragraph_id: c.id?.toString(),
+      }))
+    );
+  }
 
   const list: (DetailItem & QuestionItem)[] = isArray
     ? (data as QuestionItem[])
@@ -232,22 +251,53 @@ export default function MathemNisRusPage() {
             {list.length === 0 && (
               <p className="text-slate-500">В файле нет элементов для отображения.</p>
             )}
-            {list.map((item, index) => {
-              const q = item as QuestionItem & DetailItem;
-              const hasQuestion = "question" in q && q.question;
-              const questionId = (q as QuestionItem).id ?? index + 1;
-              const questionKey = questionId.toString();
-              const options = (q as QuestionItem).options ?? [];
-              const selected = selectedOptions[questionKey];
+            {(() => {
+              const examConditionRegex = /^(ПРОБНЫЙ ТЕСТ|БЛОК\s+\d|Рекомендуемое время)|вопросов\.\s*Время выполнения|^\d+\s*минут/i;
+              const visibleList = list
+                .map((item, index) => ({ item, index }))
+                .filter(({ item }) => {
+                  const q = item as QuestionItem & DetailItem;
+                  const hasQuestion = "question" in q && q.question;
+                  const options = (q as QuestionItem).options ?? [];
+                  const plainText = (q as DetailItem).text ?? "";
+                  const plainTextStripped = plainText.replace(/^\d+\s*[.)]\s*/, "").trim();
+                  const questionText = (q as QuestionItem).question ?? "";
+                  const isExamCondition = examConditionRegex.test(plainTextStripped) || examConditionRegex.test(questionText);
+                  if (isExamCondition) return false;
+                  return hasQuestion || options.length > 0 || (!!plainText && !!plainTextStripped);
+                });
+              return visibleList.map(({ item, index }, visibleIndex) => {
+                const q = item as QuestionItem & DetailItem;
+                const hasQuestion = "question" in q && q.question;
+                const questionId = (q as QuestionItem).id ?? index + 1;
+                const questionKey = questionId.toString();
+                const options = (q as QuestionItem).options ?? [];
+                const selected = selectedOptions[questionKey];
+                const plainText = (q as DetailItem).text ?? "";
+                const plainTextStripped = plainText.replace(/^\d+\s*[.)]\s*/, "").trim();
+                const questionNumber = visibleIndex + 1;
 
-              return (
-                <div
-                  key={(q as DetailItem).paragraph_id ?? (q as QuestionItem).id ?? index}
-                  className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
-                >
-                  {hasQuestion && (
-                    <div className="font-medium text-slate-900">
-                      <MathText text={(q as QuestionItem).question ?? ""} />
+                return (
+                  <div
+                    key={(q as DetailItem).paragraph_id ?? (q as QuestionItem).id ?? index}
+                    className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm"
+                  >
+                    <div className="mb-1 flex items-baseline gap-2">
+                      <span className="text-sm font-semibold text-slate-500">
+                        {questionNumber}.
+                      </span>
+                      {hasQuestion && (
+                        <div className="min-w-0 flex-1 font-medium text-slate-900">
+                          <MathText text={(q as QuestionItem).question ?? ""} />
+                        </div>
+                      )}
+                    </div>
+                  {!hasQuestion && options.length === 0 && plainTextStripped && (
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-sm font-semibold text-slate-500">
+                        {questionNumber}.
+                      </span>
+                      <MathText text={plainTextStripped} />
                     </div>
                   )}
                   {options.length > 0 && (
@@ -279,15 +329,10 @@ export default function MathemNisRusPage() {
                       })}
                     </div>
                   )}
-                  {(q as DetailItem).text && !hasQuestion && options.length === 0 && (
-                    <MathText text={(q as DetailItem).text ?? ""} />
-                  )}
-                  {(q as DetailItem).page_id != null && (
-                    <p className="mt-2 text-xs text-slate-400">Страница {(q as DetailItem).page_id}</p>
-                  )}
                 </div>
               );
-            })}
+            });
+            })()}
             {totalQuestions > 0 && (
               <div className="mt-6 flex flex-wrap items-center gap-3">
                 <button

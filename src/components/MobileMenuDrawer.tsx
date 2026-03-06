@@ -71,11 +71,11 @@ export default function MobileMenuDrawer() {
           <Link href="/" onClick={closeMenu} className="flex items-center gap-2">
             <img
               src="/tas-prep-logo.png"
-              alt="BilimBridge"
+              alt="TAS Prep"
               className="h-12 w-auto object-contain"
               fetchPriority="high"
             />
-            <span className="text-lg font-semibold text-slate-900">BilimBridge</span>
+            <span className="text-lg font-semibold text-slate-900">TAS Prep</span>
           </Link>
           <button
             type="button"
