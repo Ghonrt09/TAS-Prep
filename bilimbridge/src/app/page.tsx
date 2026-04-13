@@ -257,7 +257,7 @@ export default function HomePage() {
             {t("forInvestorsBody")}
           </p>
           <a
-            href="mailto:hello@tasprep.com?subject=TAS%20Prep%20—%20инвестиции%20/%20партнёрство"
+            href="mailto:baiserikovalmansur619@gmail.com?subject=TAS%20Prep%20—%20инвестиции%20/%20партнёрство"
             className="mt-5 inline-flex rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
           >
             {t("forInvestorsCta")}
@@ -345,7 +345,7 @@ export default function HomePage() {
                 </li>
                 <li>
                   <a
-                    href="mailto:hello@tasprep.com"
+                    href="mailto:baiserikovalmansur619@gmail.com"
                     className="hover:text-blue-700 hover:underline"
                   >
                     {t("footerContactEmail")}
