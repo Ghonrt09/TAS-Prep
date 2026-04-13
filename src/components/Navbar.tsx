@@ -1,0 +1,170 @@
+"use client";
+
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+
+import { useLanguage } from "@/context/LanguageContext";
+import { useMobileMenu } from "@/context/MobileMenuContext";
+
+const navLinks = [
+  { href: "/practice", key: "navPractice" },
+  { href: "/question-bank", key: "navQuestionBank" },
+  { href: "/score-calculator", key: "navScoreCalculator" },
+  { href: "/score-predictor", key: "navScorePredictor" },
+  { href: "/reviews", key: "navReviews" },
+] as const;
+
+const examTimers = [
+  { label: "NIS", target: "2026-05-15T09:00:00+06:00" },
+  { label: "BIL", target: "2026-06-10T09:00:00+06:00" },
+  { label: "RFMSH", target: "2026-07-05T09:00:00+06:00" },
+];
+
+const clampNumber = (value: number) => (value < 0 ? 0 : value);
+
+const formatCountdown = (targetDate: Date, now: number) => {
+  const diffMs = clampNumber(targetDate.getTime() - now);
+  const totalSeconds = Math.floor(diffMs / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  return {
+    days,
+    hours,
+    minutes,
+    seconds,
+  };
+};
+
+export default function Navbar() {
+  const [now, setNow] = useState(() => Date.now());
+  const { language, setLanguage, t } = useLanguage();
+  const { openMenu } = useMobileMenu();
+  const pathname = usePathname();
+  const showTimers = pathname !== "/";
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setNow(Date.now());
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const timers = useMemo(
+    () =>
+      examTimers.map((timer) => ({
+        ...timer,
+        date: new Date(timer.target),
+      })),
+    []
+  );
+
+  return (
+    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white shadow-sm">
+      <div className="flex w-full items-center gap-2 py-2.5 sm:gap-4 sm:py-3">
+        {/* Логотип прижат к левому краю экрана */}
+        <div className="flex shrink-0 items-center gap-3 pl-4 pr-2 sm:pl-6 sm:pr-3 lg:pl-8">
+          <button
+            type="button"
+            onClick={openMenu}
+            className="flex size-10 items-center justify-center rounded-xl text-slate-600 transition-colors hover:bg-blue-50 hover:text-blue-600 lg:hidden"
+            aria-label="Открыть меню"
+          >
+            <svg className="size-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <Link href="/" className="flex shrink-0 items-center gap-2 rounded-lg transition-opacity hover:opacity-90">
+            <img
+              src="/tas-prep-logo.png"
+              alt="TAS Prep"
+              className="h-14 w-auto object-contain sm:h-16 lg:h-20"
+              fetchPriority="high"
+            />
+          </Link>
+        </div>
+        <div className="hidden shrink-0 lg:block lg:min-w-[4rem]" aria-hidden />
+        <div className="flex min-w-0 flex-1 items-center justify-between pr-4 sm:pr-6 lg:pr-8">
+        {showTimers ? (
+          <div className="flex flex-1 items-center justify-center gap-2 overflow-x-auto py-0.5 sm:flex-col sm:gap-2 sm:overflow-visible sm:py-0">
+            {timers.map((timer) => {
+              const countdown = formatCountdown(timer.date, now);
+              return (
+                <div
+                  key={timer.label}
+                  className="shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-slate-50/80 px-2 py-1 text-[10px] font-semibold text-slate-700 shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50/50 sm:flex sm:min-w-[180px] sm:items-center sm:justify-center sm:gap-2 sm:px-4 sm:py-2 sm:text-xs"
+                >
+                  <span className="text-slate-500">
+                    {timer.label}:
+                  </span>{" "}
+                  <span className="font-mono tabular-nums text-slate-900">
+                    {countdown.days}
+                    {t("timerDays")} {countdown.hours}
+                    {t("timerHours")} {countdown.minutes}
+                    {t("timerMinutes")} {countdown.seconds}
+                    {t("timerSeconds")}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        ) : (
+          <div className="flex-1" />
+        )}
+        <nav className="hidden items-center gap-1 text-sm font-medium text-slate-600 lg:flex lg:ml-2">
+          {navLinks.map((link) => {
+            const isActive = pathname === link.href;
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={`rounded-lg px-3 py-2 transition-colors hover:bg-slate-100 hover:text-slate-900 ${
+                  isActive ? "bg-blue-50 font-semibold text-blue-700" : ""
+                }`}
+              >
+                {t(link.key)}
+              </Link>
+            );
+          })}
+        </nav>
+        <div className="flex h-9 items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setLanguage("ru")}
+            className={`flex h-9 shrink-0 items-center justify-center rounded-full px-3 text-xs font-semibold transition-colors ${
+              language === "ru"
+                ? "bg-blue-600 text-white shadow-sm"
+                : "border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            RU
+          </button>
+          <button
+            type="button"
+            onClick={() => setLanguage("kk")}
+            className={`flex h-9 shrink-0 items-center justify-center rounded-full px-3 text-xs font-semibold transition-colors ${
+              language === "kk"
+                ? "bg-blue-600 text-white shadow-sm"
+                : "border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
+            }`}
+          >
+            KZ
+          </button>
+          <div className="ml-4 flex h-9 shrink-0 items-center">
+            <Link
+              href="/auth"
+              className="flex h-9 min-w-0 items-center justify-center rounded-lg bg-blue-600 px-5 text-sm font-semibold leading-none text-white no-underline shadow-sm transition-colors hover:bg-blue-700"
+            >
+              {t("navSignIn")}
+            </Link>
+          </div>
+        </div>
+        </div>
+      </div>
+    </header>
+  );
+}
