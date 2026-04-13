@@ -1,0 +1,27 @@
+# Схема целиком:
+# 1) Vercel: Project → Settings → Git → Deploy Hooks → Add → Branch: main → скопировать URL.
+# 2) GitHub: Repo → Settings → Secrets and variables → Actions → New repository secret
+#    Name: VERCEL_DEPLOY_HOOK_URL   Value: (вставить URL хука)
+# 3) Запуск: вкладка Actions → "Vercel redeploy (hook)" → Run workflow
+#
+# Так вы принудительно пересобираете прод, даже если обычный деплой с push не сработал.
+
+name: Vercel redeploy (hook)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  redeploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel deploy hook
+        env:
+          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$VERCEL_DEPLOY_HOOK_URL" ]; then
+            echo "Добавьте секрет VERCEL_DEPLOY_HOOK_URL в настройках репозитория GitHub."
+            exit 1
+          fi
+          curl -fsS -X POST "$VERCEL_DEPLOY_HOOK_URL"
+          echo "Hook вызван."
