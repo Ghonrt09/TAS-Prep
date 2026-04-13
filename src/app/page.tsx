@@ -3,6 +3,9 @@
 import Link from "next/link";
 
 import { useLanguage } from "@/context/LanguageContext";
+import { SITE_CONTACT_EMAIL, siteMailtoInvestorsHref, siteMailtoPlainHref } from "@/lib/siteContact";
+
+export const dynamic = "force-dynamic";
 
 export default function HomePage() {
   const { t, language, setLanguage } = useLanguage();
@@ -257,7 +260,7 @@ export default function HomePage() {
             {t("forInvestorsBody")}
           </p>
           <a
-            href="mailto:baiserikovalmansur619@gmail.com?subject=TAS%20Prep%20—%20инвестиции%20/%20партнёрство"
+            href={siteMailtoInvestorsHref()}
             className="mt-5 inline-flex rounded-full bg-white px-5 py-2.5 text-sm font-semibold text-slate-900 transition hover:bg-slate-100"
           >
             {t("forInvestorsCta")}
@@ -345,10 +348,10 @@ export default function HomePage() {
                 </li>
                 <li>
                   <a
-                    href="mailto:baiserikovalmansur619@gmail.com"
+                    href={siteMailtoPlainHref()}
                     className="hover:text-blue-700 hover:underline"
                   >
-                    {t("footerContactEmail")}
+                    {t("footerContactEmail", { email: SITE_CONTACT_EMAIL })}
                   </a>
                 </li>
               </ul>
