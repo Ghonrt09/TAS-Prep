@@ -120,7 +120,9 @@ export default function Navbar() {
         )}
         <nav className="hidden items-center gap-1 text-sm font-medium text-slate-600 lg:flex lg:ml-2">
           {navLinks.map((link) => {
-            const isActive = pathname === link.href;
+            const isActive =
+              pathname === link.href ||
+              (link.href === "/practice" && pathname.startsWith("/practice/"));
             return (
               <Link
                 key={link.href}

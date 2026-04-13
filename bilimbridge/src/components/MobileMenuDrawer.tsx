@@ -90,7 +90,9 @@ export default function MobileMenuDrawer() {
         </div>
         <nav className="flex flex-1 flex-col gap-0.5 overflow-y-auto px-3 py-4">
           {sections.map((section) => {
-            const isActive = pathname === section.href;
+            const isActive =
+              pathname === section.href ||
+              (section.href === "/practice" && pathname.startsWith("/practice/"));
             return (
               <Link
                 key={section.href}

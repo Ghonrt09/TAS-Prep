@@ -96,7 +96,10 @@ export default function Sidebar() {
             label={t(section.key)}
             iconKey={section.icon}
             isNew={section.isNew}
-            isActive={pathname === section.href}
+            isActive={
+              pathname === section.href ||
+              (section.href === "/practice" && pathname.startsWith("/practice/"))
+            }
           />
         ))}
       </nav>

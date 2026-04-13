@@ -1,126 +1,51 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
 
-import QuestionCard from "@/components/QuestionCard";
-import { useAuth } from "@/context/AuthContext";
 import { useLanguage } from "@/context/LanguageContext";
-import { mockQuestions } from "@/lib/mockQuestions";
-import { saveUserProgress } from "@/lib/userProfile";
+import type { TrialSlug } from "@/lib/trialTests";
+
+const trialLinks: {
+  slug: TrialSlug;
+  titleKey: "examNisTitle" | "examBilTitle" | "examRfmshTitle";
+  detailKey: "examNisDetail" | "examBilDetail" | "examRfmshDetail";
+  badgeKey: "examNisBadge" | "examBilBadge" | "examRfmshBadge";
+}[] = [
+  { slug: "nis", titleKey: "examNisTitle", detailKey: "examNisDetail", badgeKey: "examNisBadge" },
+  { slug: "bil", titleKey: "examBilTitle", detailKey: "examBilDetail", badgeKey: "examBilBadge" },
+  { slug: "rfmsh", titleKey: "examRfmshTitle", detailKey: "examRfmshDetail", badgeKey: "examRfmshBadge" },
+];
 
 export default function PracticePage() {
   const { t } = useLanguage();
-  const { user } = useAuth();
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const [answers, setAnswers] = useState<Record<number, string>>({});
-  const savedProgressRef = useRef(false);
-
-  const currentQuestion = mockQuestions[currentIndex];
-  const totalQuestions = mockQuestions.length;
-
-  const progress = useMemo(
-    () => Math.round(((currentIndex + 1) / totalQuestions) * 100),
-    [currentIndex, totalQuestions]
-  );
-
-  const results = useMemo(() => {
-    let correct = 0;
-    let incorrect = 0;
-
-    mockQuestions.forEach((question) => {
-      const answer = answers[question.id];
-      if (!answer) return;
-      if (answer === question.correctAnswer) {
-        correct += 1;
-      } else {
-        incorrect += 1;
-      }
-    });
-
-    return { correct, incorrect, totalAnswered: correct + incorrect };
-  }, [answers]);
-
-  const isLastQuestion = currentIndex === totalQuestions - 1;
-
-  useEffect(() => {
-    if (
-      !user ||
-      savedProgressRef.current ||
-      results.totalAnswered === 0
-    )
-      return;
-    if (isLastQuestion) {
-      savedProgressRef.current = true;
-      saveUserProgress(user.uid, {
-        totalAnswered: results.totalAnswered,
-        correct: results.correct,
-        incorrect: results.incorrect,
-      }).catch(() => {});
-    }
-  }, [user, isLastQuestion, results.totalAnswered, results.correct, results.incorrect]);
 
   return (
     <section className="flex flex-col gap-6">
       <div>
-        <h1 className="text-2xl font-semibold text-slate-900">
-          {t("practiceTitle")}
-        </h1>
-        <p className="mt-2 text-sm text-slate-600">
-          {t("practiceSubtitle")}
-        </p>
+        <h1 className="text-2xl font-semibold text-slate-900">{t("practiceTitle")}</h1>
+        <p className="mt-2 text-sm text-slate-600">{t("practiceHubSubtitle")}</p>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-600">
-        {t("practiceProgress")}: {progress}% ({currentIndex + 1}/{totalQuestions})
-        <div className="mt-3 h-2 w-full rounded-full bg-slate-100">
-          <div
-            className="h-2 rounded-full bg-blue-600 transition-all"
-            style={{ width: `${progress}%` }}
-          />
-        </div>
+      <div className="grid gap-4 md:grid-cols-3">
+        {trialLinks.map(({ slug, titleKey, detailKey, badgeKey }) => (
+          <Link
+            key={slug}
+            href={`/practice/${slug}`}
+            className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-blue-200 hover:shadow-md"
+          >
+            <span className="w-fit rounded-full bg-amber-100 px-3 py-1 text-xs font-semibold text-amber-800">
+              {t(badgeKey)}
+            </span>
+            <h2 className="mt-4 text-lg font-semibold text-slate-900">{t(titleKey)}</h2>
+            <p className="mt-2 flex-1 text-sm text-slate-600">{t(detailKey)}</p>
+            <span className="mt-6 text-sm font-semibold text-blue-700">{t("practiceOpenTrial")} →</span>
+          </Link>
+        ))}
       </div>
 
-      <QuestionCard
-        question={currentQuestion}
-        selectedAnswer={answers[currentQuestion.id] ?? null}
-        onSelect={(answer) =>
-          setAnswers((prev) => ({ ...prev, [currentQuestion.id]: answer }))
-        }
-      />
-
-      <div className="flex flex-wrap items-center gap-3">
-        <button
-          onClick={() => setCurrentIndex((prev) => Math.max(0, prev - 1))}
-          disabled={currentIndex === 0}
-          className="rounded-full border border-slate-200 px-4 py-2 text-sm font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {t("practiceBack")}
-        </button>
-        <button
-          onClick={() =>
-            setCurrentIndex((prev) => Math.min(totalQuestions - 1, prev + 1))
-          }
-          disabled={isLastQuestion}
-          className="rounded-full bg-blue-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {t("practiceNext")}
-        </button>
-      </div>
-
-      {isLastQuestion ? (
-        <div className="rounded-2xl border border-emerald-100 bg-emerald-50 p-6">
-          <h2 className="text-lg font-semibold text-slate-900">
-            {t("practiceResults")}
-          </h2>
-          <p className="mt-2 text-sm text-slate-600">
-            {t("practiceTotal")}: {totalQuestions}
-          </p>
-          <p className="mt-1 text-sm text-slate-600">
-            {t("practiceCorrect")}: {results.correct} · {t("practiceIncorrect")}:{" "}
-            {results.incorrect}
-          </p>
-        </div>
-      ) : null}
+      <p className="rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm text-slate-600">
+        {t("practiceOneWayRule")}
+      </p>
     </section>
   );
 }
