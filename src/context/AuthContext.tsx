@@ -3,9 +3,12 @@
 import {
   GoogleAuthProvider,
   User,
+  createUserWithEmailAndPassword,
   onAuthStateChanged,
+  signInWithEmailAndPassword,
   signInWithPopup,
   signOut,
+  updateProfile,
 } from "firebase/auth";
 import { createContext, useContext, useEffect, useMemo, useState } from "react";
 
@@ -16,7 +19,10 @@ type AuthState = {
   loading: boolean;
   error: string | null;
   signInWithGoogle: () => Promise<void>;
+  signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<void>;
+  signInWithEmail: (email: string, password: string) => Promise<void>;
   signOutUser: () => Promise<void>;
+  clearError: () => void;
 };
 
 const AuthContext = createContext<AuthState | undefined>(undefined);
@@ -44,6 +50,8 @@ export function AuthProvider({
     return () => unsubscribe();
   }, []);
 
+  const clearError = () => setError(null);
+
   const signInWithGoogle = async () => {
     setError(null);
     if (!auth) {
@@ -52,6 +60,47 @@ export function AuthProvider({
     }
     try {
       await signInWithPopup(auth, new GoogleAuthProvider());
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to sign in.";
+      setError(message);
+    }
+  };
+
+  const signUpWithEmail = async (
+    email: string,
+    password: string,
+    displayName?: string
+  ) => {
+    setError(null);
+    if (!auth) {
+      setError("Firebase config is missing.");
+      return;
+    }
+    try {
+      const { user: newUser } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      if (displayName?.trim()) {
+        await updateProfile(newUser, { displayName: displayName.trim() });
+      }
+    } catch (err) {
+      const message =
+        err instanceof Error ? err.message : "Failed to sign up.";
+      setError(message);
+    }
+  };
+
+  const signInWithEmail = async (email: string, password: string) => {
+    setError(null);
+    if (!auth) {
+      setError("Firebase config is missing.");
+      return;
+    }
+    try {
+      await signInWithEmailAndPassword(auth, email, password);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to sign in.";
@@ -80,7 +129,10 @@ export function AuthProvider({
       loading,
       error,
       signInWithGoogle,
+      signUpWithEmail,
+      signInWithEmail,
       signOutUser,
+      clearError,
     }),
     [user, loading, error]
   );
