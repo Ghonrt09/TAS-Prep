@@ -130,6 +130,16 @@ export const bankCategories: BankCategory[] = [
     school: "nis",
     format: "lines",
   },
+  {
+    slug: "kolhar-nish-rus",
+    file: "КОЛХАР НИШ РУС.json",
+    title: "Количественные характеристики НИШ (рус)",
+    titleKk: "Сандық сипаттамалар НИШ (орыс)",
+    description: "Пробный тест по количественным характеристикам, русский язык.",
+    descriptionKk: "Сандық сипаттамалар бойынша сынақ тесті (орыс).",
+    school: "nis",
+    format: "lines",
+  },
 ];
 
 export function getCategoryBySlug(slug: string): BankCategory | undefined {
