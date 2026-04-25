@@ -211,7 +211,9 @@ export function parseLinesFormat(data: { lines?: string[] }): {
   const numericKey = getNumericAnswerKey(lines);
   const numericKeyWithExpl = getNumericKeyWithExplanations(lines);
 
-  const isKolhar = lines.some((l) => /САНДЫҚ СИПАТТАМАЛАР|А бағаны|В бағаны/.test(l)) && bulkKey;
+  const isKolhar = lines.some((l) =>
+    /САНДЫҚ СИПАТТАМАЛАР|А бағаны|В бағаны|Колонка\s*[АA]|Колонка\s*В/i.test(l)
+  );
   if (isKolhar) {
     const out = parseKolharFormat(lines, answerKey);
     return { ...out, blocks: out.passage ? [{ type: "passage", text: out.passage }, ...out.questions.map((q) => ({ type: "question" as const, question: q }))] : out.questions.map((q) => ({ type: "question" as const, question: q })) };
@@ -390,6 +392,7 @@ function parseKolharFormat(
   lines: string[],
   answerKey: Map<number, string>
 ): { questions: ParsedQuestion[]; answerKey: Map<number, string>; passage: string } {
+  const isRussianKolhar = lines.some((l) => /Колонка\s*[АA]|Колонка\s*В/i.test(l));
   const passageLines: string[] = [];
   const questions: ParsedQuestion[] = [];
   const digitOnly = /^\d+\s*$/;
@@ -400,7 +403,9 @@ function parseKolharFormat(
   }
   let block: string[] = [];
   let num = 0;
-  const options = ["А бағаны үлкен", "В бағаны үлкен", "Шамалар тең", "Анықтау мүмкін емес"];
+  const options = isRussianKolhar
+    ? ["Колонка А больше", "Колонка В больше", "Величины равны", "Определить невозможно"]
+    : ["А бағаны үлкен", "В бағаны үлкен", "Шамалар тең", "Анықтау мүмкін емес"];
   const letterToOpt: Record<string, string> = { A: options[0], B: options[1], C: options[2], D: options[3] };
 
   while (i < lines.length) {
@@ -410,9 +415,14 @@ function parseKolharFormat(
       if (block.length > 0 && num > 0) {
         const correctLetter = answerKey.get(num);
         const correctAnswer = correctLetter ? letterToOpt[correctLetter] ?? options[0] : options[0];
+        const colA = isRussianKolhar ? "Колонка А" : "А бағаны";
+        const colB = isRussianKolhar ? "Колонка В" : "В бағаны";
         questions.push({
           id: num,
-          question: "А бағаны: " + block.slice(0, Math.ceil(block.length / 2)).join(" ") + "\nВ бағаны: " + block.slice(Math.ceil(block.length / 2)).join(" "),
+          question:
+            colA + ": " + block.slice(0, Math.ceil(block.length / 2)).join(" ") +
+            "\n" +
+            colB + ": " + block.slice(Math.ceil(block.length / 2)).join(" "),
           options,
           correctAnswer,
         });
@@ -428,9 +438,11 @@ function parseKolharFormat(
     const correctLetter = answerKey.get(num);
     const correctAnswer = correctLetter ? letterToOpt[correctLetter] ?? options[0] : options[0];
     const mid = Math.ceil(block.length / 2);
+    const colA = isRussianKolhar ? "Колонка А" : "А бағаны";
+    const colB = isRussianKolhar ? "Колонка В" : "В бағаны";
     questions.push({
       id: num,
-      question: "А бағаны: " + block.slice(0, mid).join(" ") + "\nВ бағаны: " + block.slice(mid).join(" "),
+      question: colA + ": " + block.slice(0, mid).join(" ") + "\n" + colB + ": " + block.slice(mid).join(" "),
       options,
       correctAnswer,
     });
