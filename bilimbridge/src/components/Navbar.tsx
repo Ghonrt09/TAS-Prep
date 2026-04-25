@@ -136,11 +136,11 @@ export default function Navbar() {
             );
           })}
         </nav>
-        <div className="flex h-9 items-center gap-2">
+        <div className="ml-3 flex h-9 items-center gap-1.5">
           <button
             type="button"
             onClick={() => setLanguage("ru")}
-            className={`flex h-9 shrink-0 items-center justify-center rounded-full px-3 text-xs font-semibold transition-colors ${
+            className={`flex h-9 shrink-0 items-center justify-center rounded-full px-2.5 text-xs font-semibold transition-colors ${
               language === "ru"
                 ? "bg-blue-600 text-white shadow-sm"
                 : "border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
@@ -151,7 +151,7 @@ export default function Navbar() {
           <button
             type="button"
             onClick={() => setLanguage("kk")}
-            className={`flex h-9 shrink-0 items-center justify-center rounded-full px-3 text-xs font-semibold transition-colors ${
+            className={`flex h-9 shrink-0 items-center justify-center rounded-full px-2.5 text-xs font-semibold transition-colors ${
               language === "kk"
                 ? "bg-blue-600 text-white shadow-sm"
                 : "border border-slate-200 text-slate-600 hover:bg-slate-100 hover:text-slate-900"
