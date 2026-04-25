@@ -93,7 +93,7 @@ export default function Navbar() {
         <div className="hidden shrink-0 lg:block lg:min-w-[4rem]" aria-hidden />
         <div className="flex min-w-0 flex-1 items-center justify-between pr-4 sm:pr-6 lg:pr-8">
         {showTimers ? (
-          <div className="flex flex-1 items-center justify-center gap-2 overflow-x-auto py-0">
+          <div className="flex flex-1 flex-wrap items-center justify-center gap-2 overflow-hidden py-0">
             {timers.map((timer) => {
               const countdown = formatCountdown(timer.date, now);
               return (
