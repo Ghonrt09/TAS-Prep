@@ -90,13 +90,13 @@ export default function Navbar() {
         <div className="hidden shrink-0 lg:block lg:min-w-[4rem]" aria-hidden />
         <div className="flex min-w-0 flex-1 items-center justify-between pr-4 sm:pr-6 lg:pr-8">
         {showTimers ? (
-          <div className="flex flex-1 flex-wrap items-center justify-center gap-2 overflow-hidden py-0">
+          <div className="flex flex-1 flex-nowrap items-center justify-center gap-1 overflow-hidden py-0">
             {timers.map((timer) => {
               const countdown = formatCountdown(timer.date, now);
               return (
                 <div
                   key={timer.label}
-                  className="shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-slate-50/80 px-2 py-0.5 text-[10px] font-semibold text-slate-700 shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50/50"
+                  className="min-w-0 shrink rounded-full border border-slate-200 bg-slate-50/80 px-1.5 py-0.5 text-[10px] font-semibold leading-tight text-slate-700 shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50/50"
                 >
                   <span className="text-slate-500">
                     {timer.label}:

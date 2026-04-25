@@ -31,7 +31,13 @@ export default function PracticePage() {
             href={`/practice/${slug}`}
             className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition hover:border-blue-200 hover:shadow-md"
           >
-            <h2 className="mt-4 text-lg font-semibold text-slate-900">{t(titleKey)}</h2>
+            <h2 className="mt-4 text-lg font-semibold text-slate-900">
+              {slug === "nis"
+                ? "Пробный экзамен в НИШ"
+                : slug === "bil"
+                  ? "Пробный экзамен в БИЛ"
+                  : "Пробный экзамен в РФМШ"}
+            </h2>
             <span className="mt-6 text-sm font-semibold text-blue-700">{t("practiceOpenTrial")} →</span>
           </Link>
         ))}
