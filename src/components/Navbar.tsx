@@ -65,7 +65,7 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white shadow-sm">
-      <div className="flex w-full items-center gap-2 py-2.5 sm:gap-4 sm:py-3">
+      <div className="flex w-full items-center gap-2 py-1.5 sm:gap-4 sm:py-2">
         {/* Логотип прижат к левому краю экрана */}
         <div className="flex shrink-0 items-center gap-3 pl-4 pr-2 sm:pl-6 sm:pr-3 lg:pl-8">
           <button
@@ -82,7 +82,7 @@ export default function Navbar() {
             <img
               src="/tas-prep-logo.png"
               alt="TAS Prep"
-              className="h-14 w-auto object-contain sm:h-16 lg:h-20"
+              className="h-12 w-auto object-contain sm:h-14 lg:h-16"
               fetchPriority="high"
             />
           </Link>
@@ -90,13 +90,13 @@ export default function Navbar() {
         <div className="hidden shrink-0 lg:block lg:min-w-[4rem]" aria-hidden />
         <div className="flex min-w-0 flex-1 items-center justify-between pr-4 sm:pr-6 lg:pr-8">
         {showTimers ? (
-          <div className="flex flex-1 items-center justify-center gap-2 overflow-x-auto py-0.5 sm:flex-col sm:gap-2 sm:overflow-visible sm:py-0">
+          <div className="flex flex-1 items-center justify-center gap-2 overflow-x-auto py-0">
             {timers.map((timer) => {
               const countdown = formatCountdown(timer.date, now);
               return (
                 <div
                   key={timer.label}
-                  className="shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-slate-50/80 px-2 py-1 text-[10px] font-semibold text-slate-700 shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50/50 sm:flex sm:min-w-[180px] sm:items-center sm:justify-center sm:gap-2 sm:px-4 sm:py-2 sm:text-xs"
+                  className="shrink-0 whitespace-nowrap rounded-full border border-slate-200 bg-slate-50/80 px-2 py-0.5 text-[10px] font-semibold text-slate-700 shadow-sm transition-colors hover:border-blue-200 hover:bg-blue-50/50"
                 >
                   <span className="text-slate-500">
                     {timer.label}:
