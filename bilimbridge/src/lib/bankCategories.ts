@@ -10,6 +10,8 @@ export type BankCategory = {
   titleKk?: string;
   description: string;
   descriptionKk?: string;
+  /** Для фильтра вкладками на странице банка вопросов */
+  school: "nis" | "bil" | "rfmsh";
   /** 'lines' = PDF-to-JSON с полем lines; 'detail' = Матем НИШ РУС (detail/pages) */
   format: "lines" | "detail";
   /** Примерное кол-во вопросов для отображения в списке (опционально) */
@@ -24,6 +26,7 @@ export const bankCategories: BankCategory[] = [
     titleKk: "Математика НИШ (орыс)",
     description: "Материалы по математике для подготовки к НИШ.",
     descriptionKk: "НИШ дайындығына арналған математика материалы.",
+    school: "nis",
     format: "detail",
   },
   {
@@ -33,6 +36,7 @@ export const bankCategories: BankCategory[] = [
     titleKk: "Математика КТЛ (орыс)",
     description: "Пробный тест по математике, блок 1.",
     descriptionKk: "Математика бойынша сынақ тесті, 1-блок.",
+    school: "bil",
     format: "lines",
     questionCount: 50,
   },
@@ -43,6 +47,7 @@ export const bankCategories: BankCategory[] = [
     titleKk: "Математика РФМШ (орыс)",
     description: "Подготовка к экзамену РФМШ по математике.",
     descriptionKk: "РФМШ емтиханына дайындық, математика.",
+    school: "rfmsh",
     format: "lines",
   },
   {
@@ -52,6 +57,7 @@ export const bankCategories: BankCategory[] = [
     titleKk: "Математика НИШ (қаз)",
     description: "НИШ дайындығы, математика (қазақ тілінде).",
     descriptionKk: "НИШ дайындығы, математика.",
+    school: "nis",
     format: "lines",
   },
   {
@@ -61,6 +67,7 @@ export const bankCategories: BankCategory[] = [
     titleKk: "Математика КТЛ (қаз)",
     description: "Математика КТЛ, қазақ тілінде.",
     descriptionKk: "Математика КТЛ.",
+    school: "bil",
     format: "lines",
   },
   {
@@ -70,6 +77,7 @@ export const bankCategories: BankCategory[] = [
     titleKk: "Математика РФМШ (қаз)",
     description: "РФМШ математикасы, қазақ тілінде.",
     descriptionKk: "РФМШ математикасы.",
+    school: "rfmsh",
     format: "lines",
   },
   {
@@ -79,6 +87,7 @@ export const bankCategories: BankCategory[] = [
     titleKk: "Оқу сауаттылығы КТЛ (орыс)",
     description: "Пробный тест по грамотности чтения.",
     descriptionKk: "Оқу сауаттылығы бойынша сынақ тесті.",
+    school: "bil",
     format: "lines",
   },
   {
@@ -88,6 +97,7 @@ export const bankCategories: BankCategory[] = [
     titleKk: "Оқу сауаттылығы КТЛ (қаз)",
     description: "Грамотность чтения, қазақ тілінде.",
     descriptionKk: "Оқу сауаттылығы КТЛ.",
+    school: "bil",
     format: "lines",
   },
   {
@@ -97,6 +107,7 @@ export const bankCategories: BankCategory[] = [
     titleKk: "Қазақ тілі КШ НИШ",
     description: "Пробный тест по казахскому языку (НИШ, казахские классы).",
     descriptionKk: "Қазақ тілі бойынша сынақ тесті (НИШ, қазақ сыныптары).",
+    school: "nis",
     format: "lines",
   },
   {
@@ -106,6 +117,7 @@ export const bankCategories: BankCategory[] = [
     titleKk: "Қазақ тілі РШ НИШ",
     description: "Пробный тест по казахскому языку (русские классы).",
     descriptionKk: "Қазақ тілі бойынша сынақ тесті (орыс сыныптары).",
+    school: "nis",
     format: "lines",
   },
   {
@@ -115,6 +127,7 @@ export const bankCategories: BankCategory[] = [
     titleKk: "Сандық сипаттамалар НИШ (қаз)",
     description: "Пробный тест по количественным характеристикам, қазақ тілінде.",
     descriptionKk: "Сандық сипаттамалар бойынша сынақ тесті.",
+    school: "nis",
     format: "lines",
   },
 ];

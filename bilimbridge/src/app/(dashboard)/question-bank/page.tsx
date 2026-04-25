@@ -1,12 +1,19 @@
 "use client";
 
 import Link from "next/link";
+import { useMemo, useState } from "react";
 
 import { useLanguage } from "@/context/LanguageContext";
 import { bankCategories } from "@/lib/bankCategories";
 
 export default function QuestionBankPage() {
   const { t, language } = useLanguage();
+  const [schoolFilter, setSchoolFilter] = useState<"all" | "nis" | "bil" | "rfmsh">("all");
+
+  const filtered = useMemo(() => {
+    if (schoolFilter === "all") return bankCategories;
+    return bankCategories.filter((c) => c.school === schoolFilter);
+  }, [schoolFilter]);
 
   return (
     <section className="flex flex-col gap-6">
@@ -18,8 +25,36 @@ export default function QuestionBankPage() {
           {t("bankSubtitle")}
         </p>
       </div>
+
+      <div className="flex flex-wrap gap-2">
+        {(
+          [
+            { id: "all" as const, label: t("bankFilterAll") },
+            { id: "nis" as const, label: t("bankFilterNis") },
+            { id: "rfmsh" as const, label: t("bankFilterRfmsh") },
+            { id: "bil" as const, label: t("bankFilterBil") },
+          ] as const
+        ).map((tab) => {
+          const active = tab.id === schoolFilter;
+          return (
+            <button
+              key={tab.id}
+              type="button"
+              onClick={() => setSchoolFilter(tab.id)}
+              className={`rounded-full px-4 py-2 text-sm font-semibold transition ${
+                active
+                  ? "bg-blue-600 text-white shadow-sm"
+                  : "border border-slate-200 bg-white text-slate-700 hover:bg-slate-50"
+              }`}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2">
-        {bankCategories.map((category) => {
+        {filtered.map((category) => {
           const title = language === "kk" && category.titleKk ? category.titleKk : category.title;
           const description =
             language === "kk" && category.descriptionKk ? category.descriptionKk : category.description;
