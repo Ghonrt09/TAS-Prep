@@ -124,7 +124,7 @@ export default function BankSlugPage() {
       {!loading && !error && questions.length > 0 && (
         <>
           <p className="text-sm text-slate-500">
-            Вопросов: {totalQuestions}. После ответа сразу показывается пояснение, если ответ неверный.
+            {t("bankQuestions", { value: totalQuestions })}. {t("bankPracticeHint")}
           </p>
           <div className="flex flex-col gap-6">
             {blocks.length > 0
