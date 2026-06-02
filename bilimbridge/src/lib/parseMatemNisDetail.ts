@@ -39,7 +39,11 @@ const LETTER_MAP: Record<string, string> = {
 const LETTERS = ["A", "B", "C", "D", "E", "F", "G"];
 
 const ANSWER_KEY_REGEX = /^(\d+)\.\s*([A-EА-Е])\s*[).]?\s*(.*)/;
+/** Строка вида «3. B» в блоке ключей — не путать с вопросом. */
 const QUESTION_NUM_REGEX = /^(\d+)\.\s*([A-EА-Е])\b/;
+const KEY_SECTION_MARK = /КЛЮЧИ\s+И\s+ПОЯСНЕНИЯ|КЛЮЧИ\s+ОТВЕТОВ|КЛЮЧИ\s+И\s+ПОЯСНЕНИЯМИ/i;
+const KEY_ENTRY_RE = /(\d+)\.\s*([A-EА-Е])\s*(?:\(([^)]*)\))?\s*\.?\s*/gi;
+const KEY_LETTER_ONLY_RE = /\b([A-EА-Е])\s*\(([^)]*)\)\s*\.?\s*/g;
 const EXAM_HEADER_REGEX =
   /^(ПРОБНЫЙ ТЕСТ|БЛОК\s+\d|вопросов\.|Время выполнения|Рекомендуемое время|минут\.?)\s*$/i;
 const EXAM_HEADER_LONG =
@@ -84,9 +88,10 @@ function buildQuestionsFromDetail(detail: DetailItem[]): (DetailItem & QuestionI
     const isQuestion = /^\d+[\).\s]/.test(text);
     const isOption = /^[A-EА-Е]\)/.test(text);
 
-    if (QUESTION_NUM_REGEX.test(text)) return;
-
     const page = item.page_id ?? 0;
+    if (KEY_SECTION_MARK.test(text)) return;
+    if (page >= 10 && QUESTION_NUM_REGEX.test(text)) return;
+
     if (page >= 10 && !isQuestion && !isOption) return;
 
     if (isQuestion) {
@@ -120,9 +125,106 @@ function buildQuestionsFromDetail(detail: DetailItem[]): (DetailItem & QuestionI
   return result;
 }
 
-function buildAnswerKey(detail: DetailItem[]): Map<number, { letter: string; explanation: string }> {
-  const map = new Map<number, { letter: string; explanation: string }>();
+/** Собирает текст блока ключей с конца PDF (страницы 10–12 и т.п.). */
+function extractAnswerKeyBlob(detail: DetailItem[]): string {
+  const parts: string[] = [];
+  let inKey = false;
 
+  for (const item of detail) {
+    const text = (item.text ?? "").trim();
+    if (!text) continue;
+
+    const page = item.page_id ?? 0;
+    const keyIdx = text.search(KEY_SECTION_MARK);
+
+    if (keyIdx >= 0) {
+      inKey = true;
+      parts.push(text.slice(keyIdx));
+      continue;
+    }
+
+    if (inKey || page >= 11) {
+      parts.push(text);
+      inKey = true;
+      continue;
+    }
+
+    if (page === 10 && /Часть\s+1\s*\(|^\d+\.\s*[A-EА-Е]\s*\(/m.test(text)) {
+      parts.push(text);
+      inKey = true;
+    }
+  }
+
+  return parts.join("\n");
+}
+
+/** Парсит слепленный блок «3. B (4). … 4. B (48). …» из Матем НИШ РУС. */
+function parseAnswerKeyBlob(blob: string): Map<number, { letter: string; explanation: string }> {
+  const map = new Map<number, { letter: string; explanation: string }>();
+  if (!blob.trim()) return map;
+
+  const partStart = blob.search(/Часть\s+1\s*\(|КЛЮЧИ\s+И\s+ПОЯСНЕНИЯ/i);
+  const content = partStart >= 0 ? blob.slice(partStart) : blob;
+
+  const firstNumbered = content.search(/\b3\.\s*[A-EА-Е]\s*[\(.]/i);
+  const preamble = firstNumbered > 0 ? content.slice(0, firstNumbered) : "";
+
+  let implicitNum = 1;
+  let lm: RegExpExecArray | null;
+  KEY_LETTER_ONLY_RE.lastIndex = 0;
+  while ((lm = KEY_LETTER_ONLY_RE.exec(preamble)) !== null) {
+    const letter = normalizeLetter(lm[1]);
+    const short = lm[2].trim();
+    const explStart = lm.index + lm[0].length;
+    const next = preamble.slice(explStart).search(/\b[A-EА-Е]\s*\(/);
+    const explEnd = next >= 0 ? explStart + next : preamble.length;
+    let expl = preamble.slice(explStart, explEnd).trim().replace(/^\.\s*/, "");
+    if (short) expl = short + (expl ? ". " + expl : "");
+    if (!map.has(implicitNum)) {
+      map.set(implicitNum, { letter, explanation: expl });
+      implicitNum++;
+    }
+  }
+
+  const hits: { num: number; letter: string; paren?: string; end: number; start: number }[] = [];
+  let m: RegExpExecArray | null;
+  KEY_ENTRY_RE.lastIndex = 0;
+  while ((m = KEY_ENTRY_RE.exec(content)) !== null) {
+    const num = parseInt(m[1], 10);
+    if (num < 1) continue;
+    if (num <= 2 && !m[3] && !/[A-EА-Е]\s*\(/.test(m[0])) continue;
+    hits.push({
+      num,
+      letter: normalizeLetter(m[2]),
+      paren: m[3],
+      start: m.index,
+      end: KEY_ENTRY_RE.lastIndex,
+    });
+  }
+
+  for (let i = 0; i < hits.length; i++) {
+    const h = hits[i];
+    const explStart = h.end;
+    const explEnd = i + 1 < hits.length ? hits[i + 1].start : content.length;
+    let expl = content.slice(explStart, explEnd).trim().replace(/^\.\s*/, "");
+    if (h.paren) {
+      const tail = expl && !expl.startsWith(h.paren) ? ". " + expl : "";
+      expl = h.paren + tail;
+    }
+    const prev = map.get(h.num);
+    if (!prev || expl.length >= (prev.explanation?.length ?? 0)) {
+      map.set(h.num, { letter: h.letter, explanation: expl });
+    }
+  }
+
+  return map;
+}
+
+function buildAnswerKey(detail: DetailItem[]): Map<number, { letter: string; explanation: string }> {
+  const fromBlob = parseAnswerKeyBlob(extractAnswerKeyBlob(detail));
+  if (fromBlob.size >= 10) return fromBlob;
+
+  const map = new Map<number, { letter: string; explanation: string }>();
   detail.forEach((item) => {
     const text = (item.text ?? "").trim();
     const match = ANSWER_KEY_REGEX.exec(text);
@@ -133,6 +235,12 @@ function buildAnswerKey(detail: DetailItem[]): Map<number, { letter: string; exp
       letter: normalizeLetter(match[2]),
       explanation: (match[3] ?? "").trim(),
     });
+  });
+
+  fromBlob.forEach((v, k) => {
+    if (!map.has(k) || (v.explanation?.length ?? 0) > (map.get(k)?.explanation?.length ?? 0)) {
+      map.set(k, v);
+    }
   });
 
   return map;

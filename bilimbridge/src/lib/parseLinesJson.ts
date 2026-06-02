@@ -443,6 +443,7 @@ function parseKolharFormat(
   lines: string[],
   answerKey: Map<number, string>
 ): { questions: ParsedQuestion[]; answerKey: Map<number, string>; passage: string } {
+  const keyWithExplanations = getAnswerKeyWithExplanations(lines);
   const isRussianKolhar = lines.some((l) => /Колонка\s*[АA]|Колонка\s*В/i.test(l));
   const passageLines: string[] = [];
   const questions: ParsedQuestion[] = [];
@@ -476,6 +477,7 @@ function parseKolharFormat(
             colB + ": " + block.slice(Math.ceil(block.length / 2)).join(" "),
           options,
           correctAnswer,
+          explanation: keyWithExplanations.get(num)?.explanation,
         });
       }
       num = parseInt(trimmed, 10);
@@ -496,6 +498,7 @@ function parseKolharFormat(
       question: colA + ": " + block.slice(0, mid).join(" ") + "\n" + colB + ": " + block.slice(mid).join(" "),
       options,
       correctAnswer,
+      explanation: keyWithExplanations.get(num)?.explanation,
     });
   }
 
