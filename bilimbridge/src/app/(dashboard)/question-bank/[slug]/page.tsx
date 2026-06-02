@@ -8,6 +8,7 @@ import BankQuestionCard from "@/components/BankQuestionCard";
 import { MathText } from "@/components/MathText";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryBySlug } from "@/lib/bankCategories";
+import { parseMatemNisDetail } from "@/lib/parseMatemNisDetail";
 import { parseLinesFormat, type BankBlock, type ParsedQuestion } from "@/lib/parseLinesJson";
 
 function normalizeAnswer(s: string | undefined): string {
@@ -34,10 +35,9 @@ export default function BankSlugPage() {
     category && (language === "kk" && category.descriptionKk ? category.descriptionKk : category.description);
 
   useEffect(() => {
-    if (!category || category.format !== "lines") {
+    if (!category) {
       setLoading(false);
-      if (category?.format === "detail") setError(null);
-      else setError("Категория не найдена");
+      setError("Категория не найдена");
       return;
     }
     const url = "/data/" + encodeURIComponent(category.file);
@@ -47,16 +47,24 @@ export default function BankSlugPage() {
         return res.json();
       })
       .then((json) => {
-        const { questions: q, passage: p, blocks: b } = parseLinesFormat(json);
-        setQuestions(q);
-        setPassage(p ?? "");
-        setBlocks(b ?? []);
+        if (category.format === "detail") {
+          const { questions: q } = parseMatemNisDetail(json);
+          setQuestions(q);
+          setPassage("");
+          setBlocks([]);
+        } else {
+          const { questions: q, passage: p, blocks: b } = parseLinesFormat(json);
+          setQuestions(q);
+          setPassage(p ?? "");
+          setBlocks(b ?? []);
+        }
         setError(null);
       })
       .catch((err) => {
         setError(err instanceof Error ? err.message : "Ошибка загрузки");
         setQuestions([]);
         setBlocks([]);
+        setPassage("");
       })
       .finally(() => setLoading(false));
   }, [category]);
