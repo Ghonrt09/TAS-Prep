@@ -216,9 +216,31 @@ function getNumericKeyWithExplanations(lines: string[]): Map<number, { answer: s
   return result;
 }
 
+/** Убирает прилипший к варианту текст блока ключей (ошибка PDF→JSON). */
+function cleanOptionText(text: string): string {
+  let t = text.trim();
+  const cutMarkers = [
+    /\s+ЖАУАП[\s\S]*/i,
+    /\s+ТҮСІНДІРМЕ[\s\S]*/i,
+    /\s+ТУСІНДІРМЕ[\s\S]*/i,
+    /\s+КІЛТТЕРІ[\s\S]*/i,
+    /\s+КЛЮЧИ[\s\S]*/i,
+    /\s+КЛЮЧ\s+ОТВЕТОВ[\s\S]*/i,
+    /\s+\d+-Б[өoһ]лім:[\s\S]*/i,
+    /\s+1-Б[өo]лім:[\s\S]*/i,
+  ];
+  for (const re of cutMarkers) {
+    t = t.replace(re, "");
+  }
+  return t.trim();
+}
+
 function isStopLine(trimmed: string): boolean {
   if (!trimmed) return false;
   if (STOP_PHRASES.test(trimmed)) return true;
+  if (KEY_SECTION_START.test(trimmed)) return true;
+  if (/^ЖАУАП/i.test(trimmed)) return true;
+  if (/^ТҮСІНДІРМЕ/i.test(trimmed)) return true;
   if (/^2-Бөлім:|^2-БӨЛІМ:/i.test(trimmed)) return true;
   return false;
 }
@@ -294,7 +316,7 @@ export function parseLinesFormat(data: { lines?: string[]; segments?: string[] }
             pushQuestion({
               id: current.num,
               question: qText,
-              options: current.options,
+              options: current.options.map(cleanOptionText).filter(Boolean),
               correctAnswer,
               explanation: keyWithExplanations.get(current.num)?.explanation,
             });
@@ -340,7 +362,7 @@ export function parseLinesFormat(data: { lines?: string[]; segments?: string[] }
         pushQuestion({
           id: current.num,
           question: qText,
-          options: current.options,
+          options: current.options.map(cleanOptionText).filter(Boolean),
           correctAnswer,
           explanation: keyWithExplanations.get(current.num)?.explanation,
         });
@@ -360,16 +382,19 @@ export function parseLinesFormat(data: { lines?: string[]; segments?: string[] }
     }
 
     if (OPTION_REGEX.test(trimmed) && current) {
-      const optText = trimmed.replace(OPTION_REGEX, "").trim();
-      current.options.push(optText);
+      const optText = cleanOptionText(trimmed.replace(OPTION_REGEX, ""));
+      if (optText) current.options.push(optText);
       continue;
     }
 
     if (current && trimmed) {
+      if (isStopLine(trimmed)) break;
       if (current.options.length === 0) {
         current.questionLines.push(trimmed);
       } else {
-        current.options[current.options.length - 1] += " " + trimmed;
+        const lastIdx = current.options.length - 1;
+        const merged = cleanOptionText(`${current.options[lastIdx]} ${trimmed}`);
+        current.options[lastIdx] = merged;
       }
     }
   }
@@ -389,7 +414,7 @@ export function parseLinesFormat(data: { lines?: string[]; segments?: string[] }
       pushQuestion({
         id: current.num,
         question: qText,
-        options: current.options,
+        options: current.options.map(cleanOptionText).filter(Boolean),
         correctAnswer,
         explanation: keyWithExplanations.get(current.num)?.explanation,
       });
