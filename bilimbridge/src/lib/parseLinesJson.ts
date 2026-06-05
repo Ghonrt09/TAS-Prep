@@ -202,8 +202,27 @@ function getNumericKeyWithExplanations(lines: string[]): Map<number, { answer: s
 function isStopLine(trimmed: string): boolean {
   if (!trimmed) return false;
   if (STOP_PHRASES.test(trimmed)) return true;
+  if (KEY_SECTION_START.test(trimmed)) return true;
+  if (/^ЖАУАП/i.test(trimmed)) return true;
+  if (/^ТҮСІНДІРМЕ/i.test(trimmed)) return true;
   if (/^2-Бөлім:|^2-БӨЛІМ:/i.test(trimmed)) return true;
   return false;
+}
+
+/** Убирает прилипший к варианту текст блока ключей (ошибка PDF→JSON). */
+function cleanOptionText(text: string): string {
+  let t = text.trim();
+  const cutMarkers = [
+    /\s+ЖАУАП[\s\S]*/i,
+    /\s+ТҮСІНДІРМЕ[\s\S]*/i,
+    /\s+КІЛТТЕРІ[\s\S]*/i,
+    /\s+КЛЮЧИ[\s\S]*/i,
+    /\s+\d+-Б[өoһ]лім:[\s\S]*/i,
+  ];
+  for (const re of cutMarkers) {
+    t = t.replace(re, "");
+  }
+  return t.trim();
 }
 
 export function parseLinesFormat(data: { lines?: string[] }): {
@@ -269,15 +288,16 @@ export function parseLinesFormat(data: { lines?: string[] }): {
           if (EXAM_HEADER_REGEX.test(qText)) {
             current = null;
           } else if (hasOptions) {
-            const correctLetter = answerKey.get(current.num);
+            const keyEntry = keyWithExplanations.get(current.num);
+            const correctLetter = answerKey.get(current.num) ?? keyEntry?.letter;
             const correctIdx = correctLetter !== undefined ? letterToIndex[correctLetter] : 0;
             const correctAnswer = current.options[correctIdx] ?? current.options[0] ?? "";
             pushQuestion({
               id: current.num,
               question: qText,
-              options: current.options,
+              options: current.options.map(cleanOptionText).filter(Boolean),
               correctAnswer,
-              explanation: keyWithExplanations.get(current.num)?.explanation,
+              explanation: keyEntry?.explanation,
             });
             current = null;
           } else if (numericKey.has(current.num)) {
@@ -315,13 +335,13 @@ export function parseLinesFormat(data: { lines?: string[] }): {
     if (current && current.options.length > 0 && isNewPassageStart(trimmed)) {
       const qText = current.questionLines.join(" ").replace(/^\d+\.\s*/, "").trim();
       if (!EXAM_HEADER_REGEX.test(qText)) {
-        const correctLetter = answerKey.get(current.num);
+        const correctLetter = answerKey.get(current.num) ?? keyWithExplanations.get(current.num)?.letter;
         const correctIdx = correctLetter !== undefined ? letterToIndex[correctLetter] : 0;
         const correctAnswer = current.options[correctIdx] ?? current.options[0] ?? "";
         pushQuestion({
           id: current.num,
           question: qText,
-          options: current.options,
+          options: current.options.map(cleanOptionText).filter(Boolean),
           correctAnswer,
           explanation: keyWithExplanations.get(current.num)?.explanation,
         });
@@ -341,16 +361,18 @@ export function parseLinesFormat(data: { lines?: string[] }): {
     }
 
     if (OPTION_REGEX.test(trimmed) && current) {
-      const optText = trimmed.replace(OPTION_REGEX, "").trim();
-      current.options.push(optText);
+      const optText = cleanOptionText(trimmed.replace(OPTION_REGEX, ""));
+      if (optText) current.options.push(optText);
       continue;
     }
 
     if (current && trimmed) {
+      if (isStopLine(trimmed)) break;
       if (current.options.length === 0) {
         current.questionLines.push(trimmed);
       } else {
-        current.options[current.options.length - 1] += " " + trimmed;
+        const lastIdx = current.options.length - 1;
+        current.options[lastIdx] = cleanOptionText(`${current.options[lastIdx]} ${trimmed}`);
       }
     }
   }
@@ -364,13 +386,13 @@ export function parseLinesFormat(data: { lines?: string[] }): {
     const qText = current.questionLines.join(" ").replace(/^\d+\.\s*/, "").trim();
     const hasOptions = current.options.length > 0;
     if (!EXAM_HEADER_REGEX.test(qText) && hasOptions) {
-      const correctLetter = answerKey.get(current.num);
+      const correctLetter = answerKey.get(current.num) ?? keyWithExplanations.get(current.num)?.letter;
       const correctIdx = correctLetter !== undefined ? letterToIndex[correctLetter] : 0;
       const correctAnswer = current.options[correctIdx] ?? current.options[0] ?? "";
       pushQuestion({
         id: current.num,
         question: qText,
-        options: current.options,
+        options: current.options.map(cleanOptionText).filter(Boolean),
         correctAnswer,
         explanation: keyWithExplanations.get(current.num)?.explanation,
       });

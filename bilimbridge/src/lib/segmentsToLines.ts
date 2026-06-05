@@ -279,6 +279,9 @@ export function parseNisKazMathGuideSegments(segments: string[]): string[] {
     if (!letterM) continue;
     const letter = normalizeOptionLetter(letterM[1] + ")");
     j++;
+    while (j < segments.length && /^\([^)]*\)$/.test(segments[j].trim())) j++;
+    while (j < segments.length && segments[j].trim().startsWith("(") && !segments[j].includes(")")) j++;
+    if (j < segments.length && /^\([^)]*\)/.test(segments[j].trim())) j++;
 
     const expl = extractExplanation(segments.slice(prevEnd, jaumIdx));
     const num = q + 1;

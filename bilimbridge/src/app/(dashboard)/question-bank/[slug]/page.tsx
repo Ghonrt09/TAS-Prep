@@ -8,7 +8,6 @@ import BankQuestionCard from "@/components/BankQuestionCard";
 import { MathText } from "@/components/MathText";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryBySlug } from "@/lib/bankCategories";
-import { parseMatemNisDetail } from "@/lib/parseMatemNisDetail";
 import { parseLinesFormat, type BankBlock, type ParsedQuestion } from "@/lib/parseLinesJson";
 
 function normalizeAnswer(s: string | undefined): string {
@@ -23,7 +22,6 @@ export default function BankSlugPage() {
   const { t, language } = useLanguage();
 
   const [questions, setQuestions] = useState<ParsedQuestion[]>([]);
-  const [passage, setPassage] = useState<string>("");
   const [blocks, setBlocks] = useState<BankBlock[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -40,6 +38,11 @@ export default function BankSlugPage() {
       setError("Категория не найдена");
       return;
     }
+    if (category.format !== "lines") {
+      setLoading(false);
+      setError("Формат не поддерживается");
+      return;
+    }
     const url = "/data/" + encodeURIComponent(category.file);
     fetch(url)
       .then((res) => {
@@ -47,24 +50,15 @@ export default function BankSlugPage() {
         return res.json();
       })
       .then((json) => {
-        if (category.format === "detail") {
-          const { questions: q } = parseMatemNisDetail(json);
-          setQuestions(q);
-          setPassage("");
-          setBlocks([]);
-        } else {
-          const { questions: q, passage: p, blocks: b } = parseLinesFormat(json);
-          setQuestions(q);
-          setPassage(p ?? "");
-          setBlocks(b ?? []);
-        }
+        const { questions: q, blocks: b } = parseLinesFormat(json);
+        setQuestions(q);
+        setBlocks(b ?? []);
         setError(null);
       })
       .catch((err) => {
         setError(err instanceof Error ? err.message : "Ошибка загрузки");
         setQuestions([]);
         setBlocks([]);
-        setPassage("");
       })
       .finally(() => setLoading(false));
   }, [category]);
@@ -89,28 +83,25 @@ export default function BankSlugPage() {
     );
   }
 
-  function renderQuestion(q: ParsedQuestion, questionNumber: number) {
+  const renderQuestion = (q: ParsedQuestion, questionNumber: number) => {
     const questionKey = (q.id ?? questionNumber).toString();
     return (
       <BankQuestionCard
-        key={`q-${q.id ?? questionNumber}`}
+        key={questionKey}
         question={q}
         questionNumber={questionNumber}
         selected={selectedOptions[questionKey]}
-        onSelect={(answer) =>
-          setSelectedOptions((prev) => ({ ...prev, [questionKey]: answer }))
-        }
+        onSelect={(answer) => setSelectedOptions((prev) => ({ ...prev, [questionKey]: answer }))}
       />
     );
-  }
+  };
 
   return (
     <section className="flex flex-col gap-6">
-      <div className="flex items-center gap-4">
-        <Link href="/question-bank" className="text-sm font-medium text-slate-600 hover:text-slate-900">
-          ← {t("bankTitle")}
-        </Link>
-      </div>
+      <Link href="/question-bank" className="text-sm font-medium text-slate-600 hover:text-slate-900">
+        ← {t("bankTitle")}
+      </Link>
+
       <div>
         <h1 className="text-2xl font-semibold text-slate-900">{title}</h1>
         <p className="mt-2 text-sm text-slate-600">{description}</p>
@@ -132,9 +123,11 @@ export default function BankSlugPage() {
       {!loading && !error && questions.length > 0 && (
         <>
           <p className="text-sm text-slate-500">
-            {t("bankQuestions", { value: totalQuestions })}. {t("bankPracticeHint")}
+            {t("bankQuestions", { value: totalQuestions })}
+            {answeredCount > 0 && ` · ${answeredCount}/${totalQuestions}`}
           </p>
-          <div className="flex flex-col gap-6">
+
+          <div className="flex flex-col gap-4">
             {blocks.length > 0
               ? blocks.map((block, blockIndex) => {
                   if (block.type === "passage") {
@@ -154,34 +147,20 @@ export default function BankSlugPage() {
                   const questionNumber = questions.indexOf(q) + 1;
                   return renderQuestion(q, questionNumber);
                 })
-              : (
-                <>
-                  {passage && (
-                    <div className="rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-                      <p className="mb-2 font-semibold text-slate-800">Текст для заданий:</p>
-                      <div className="whitespace-pre-wrap">
-                        <MathText text={passage} />
-                      </div>
-                    </div>
-                  )}
-                  {questions.map((q, index) => renderQuestion(q, index + 1))}
-                </>
-              )}
+              : questions.map((q, index) => renderQuestion(q, index + 1))}
           </div>
 
-          <div className="mt-2 flex flex-wrap items-center gap-3">
+          <div className="mt-4 flex flex-wrap items-center gap-3">
             <button
               type="button"
               onClick={() => setShowSummary(true)}
-              className="rounded-full bg-blue-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
+              className="rounded-full bg-blue-600 px-5 py-2.5 text-sm font-semibold text-white shadow-sm transition hover:bg-blue-700"
             >
               Итоги
             </button>
             {showSummary && (
               <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-900">
-                <p>
-                  Отвечено: {answeredCount} из {totalQuestions}, правильно: {correctCount}.
-                </p>
+                Правильных: {correctCount} из {totalQuestions}
               </div>
             )}
           </div>
