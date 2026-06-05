@@ -32,6 +32,8 @@ type BankQuestionCardProps = {
   allowReselect?: boolean;
   /** Текст для чтения перед вопросом (пробник). */
   passage?: string;
+  /** Разбор после завершения пробника — показывать ответы и объяснения. */
+  reviewMode?: boolean;
 };
 
 export default function BankQuestionCard({
@@ -41,16 +43,17 @@ export default function BankQuestionCard({
   onSelect,
   allowReselect = false,
   passage,
+  reviewMode = false,
 }: BankQuestionCardProps) {
   const { t } = useLanguage();
   const q = question;
   const [draft, setDraft] = useState("");
 
   const answered = selected != null && selected !== "";
-  const lockOptions = answered && !allowReselect;
-  const isCorrect = answered && isAnswerCorrect(selected, q);
+  const lockOptions = (answered && !allowReselect) || reviewMode;
+  const isCorrect = answered && isAnswerCorrect(selected!, q);
   const explanationText = q.explanation?.trim() ?? "";
-  const showExplanationPanel = answered;
+  const showExplanationPanel = answered || reviewMode;
 
   return (
     <div
@@ -81,13 +84,21 @@ export default function BankQuestionCard({
           <span className="text-sm font-semibold text-slate-700">
             {t("bankQuestionLabel", { number: questionNumber })}
           </span>
-          {answered && (
+          {showExplanationPanel && (
             <span
               className={`rounded-full px-2.5 py-0.5 text-xs font-semibold ${
-                isCorrect ? "bg-emerald-600 text-white" : "bg-red-600 text-white"
+                !answered
+                  ? "bg-slate-500 text-white"
+                  : isCorrect
+                    ? "bg-emerald-600 text-white"
+                    : "bg-red-600 text-white"
               }`}
             >
-              {isCorrect ? t("bankAnswerCorrect") : t("bankAnswerWrong")}
+              {!answered
+                ? t("practiceReviewSkipped")
+                : isCorrect
+                  ? t("bankAnswerCorrect")
+                  : t("bankAnswerWrong")}
             </span>
           )}
         </div>
@@ -108,8 +119,8 @@ export default function BankQuestionCard({
                 const letter = LETTERS[i] ?? "?";
                 const isSelected = selected === opt;
                 const isCorrectOption = isAnswerCorrect(opt, q);
-                const showWrong = answered && isSelected && !isCorrect;
-                const showCorrect = answered && isCorrectOption;
+                const showWrong = showExplanationPanel && isSelected && !isCorrect;
+                const showCorrect = showExplanationPanel && isCorrectOption;
 
                 let optionClass =
                   "flex w-full items-start gap-3 rounded-xl border-2 px-3 py-2.5 text-left text-sm transition ";
@@ -117,7 +128,7 @@ export default function BankQuestionCard({
                   optionClass += "border-red-500 bg-red-50 text-red-950";
                 } else if (showCorrect) {
                   optionClass += "border-emerald-500 bg-emerald-50 text-emerald-950";
-                } else if (answered) {
+                } else if (showExplanationPanel) {
                   optionClass += "border-slate-200 bg-white text-slate-500";
                 } else if (isSelected) {
                   optionClass += "border-blue-500 bg-blue-50 text-blue-900";

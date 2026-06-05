@@ -2,6 +2,8 @@ import type { BankCategory } from "@/lib/bankCategories";
 import { parseMatemNisDetail } from "@/lib/parseMatemNisDetail";
 import { parseLinesFormat, type BankBlock, type ParsedQuestion } from "@/lib/parseLinesJson";
 import { bankJsonToLines } from "@/lib/segmentsToLines";
+import type { TrialSectionDef } from "@/lib/trialTests";
+import { getSectionCategory, getSectionTitle } from "@/lib/trialTests";
 
 export type BankLoadResult = {
   questions: ParsedQuestion[];
@@ -31,27 +33,29 @@ export type TrialQuestionItem = {
   passage?: string;
 };
 
-/** Вопросы с текстом для чтения, который идёт перед ними в probnik. */
+/** Один текст для чтения остаётся у всех следующих вопросов, пока не появится новый текст. */
 export function buildTrialQuestionItems(
   questions: ParsedQuestion[],
   blocks: BankBlock[]
 ): TrialQuestionItem[] {
   if (blocks.length === 0) {
-    return questions.map((question, index) => ({
-      question,
-      questionNumber: index + 1,
-      passage: question.passage,
-    }));
+    let activePassage: string | undefined;
+    return questions.map((question, index) => {
+      if (question.passage?.trim()) activePassage = question.passage;
+      return {
+        question,
+        questionNumber: index + 1,
+        passage: activePassage,
+      };
+    });
   }
 
   const items: TrialQuestionItem[] = [];
-  let pendingPassage: string | undefined;
+  let activePassage: string | undefined;
 
   for (const block of blocks) {
     if (block.type === "passage") {
-      pendingPassage = pendingPassage
-        ? `${pendingPassage}\n\n${block.text}`
-        : block.text;
+      activePassage = block.text;
       continue;
     }
 
@@ -59,9 +63,8 @@ export function buildTrialQuestionItems(
     items.push({
       question,
       questionNumber: questions.indexOf(question) + 1,
-      passage: pendingPassage ?? question.passage,
+      passage: activePassage ?? question.passage,
     });
-    pendingPassage = undefined;
   }
 
   return items;
@@ -69,4 +72,62 @@ export function buildTrialQuestionItems(
 
 export function questionKey(question: ParsedQuestion, questionNumber: number): string {
   return (question.id ?? questionNumber).toString();
+}
+
+export type TrialFlatItem = TrialQuestionItem & {
+  globalIndex: number;
+  sectionId: string;
+  sectionTitle: string;
+  answerKey: string;
+};
+
+export type LoadedTrialSection = {
+  section: TrialSectionDef;
+  title: string;
+  items: TrialQuestionItem[];
+};
+
+export async function loadTrialExam(
+  sections: TrialSectionDef[],
+  language: "ru" | "kk"
+): Promise<LoadedTrialSection[]> {
+  const loaded: LoadedTrialSection[] = [];
+
+  for (const section of sections) {
+    const category = getSectionCategory(section, language);
+    if (!category) continue;
+
+    const { questions, blocks } = await fetchBankData(category);
+    const items = buildTrialQuestionItems(questions, blocks);
+    if (items.length === 0) continue;
+
+    loaded.push({
+      section,
+      title: getSectionTitle(section, language),
+      items,
+    });
+  }
+
+  return loaded;
+}
+
+export function flattenTrialSections(sections: LoadedTrialSection[]): TrialFlatItem[] {
+  const flat: TrialFlatItem[] = [];
+  let globalIndex = 0;
+
+  for (const { section, title, items } of sections) {
+    for (const item of items) {
+      const key = `${section.id}:${questionKey(item.question, item.questionNumber)}`;
+      flat.push({
+        ...item,
+        globalIndex,
+        sectionId: section.id,
+        sectionTitle: title,
+        answerKey: key,
+      });
+      globalIndex += 1;
+    }
+  }
+
+  return flat;
 }
