@@ -26,6 +26,13 @@ function isSeparator(s: string): boolean {
   return !s || /^=+$/.test(s);
 }
 
+function isTextHeaderAt(segments: string[], idx: number): boolean {
+  const t = segments[idx]?.trim() ?? "";
+  if (t !== "ТЕКСТ" && t !== "Text") return false;
+  const next = segments[idx + 1]?.trim() ?? "";
+  return /^\d+[:.]$/.test(next);
+}
+
 function findKeySectionStart(segments: string[]): number {
   for (let i = 0; i < segments.length - 2; i++) {
     const t = segments[i].trim();
@@ -120,6 +127,8 @@ export function segmentsToLines(segments: string[]): string[] {
         const s = segments[i].trim();
         if (isOptionSegment(s)) break;
         if (s === "Вопрос" || s === "Question") break;
+        if (s === "ТЕКСТ" || s === "Text") break;
+        if (isTextHeaderAt(segments, i)) break;
         if (/^КЛЮЧ$/i.test(s)) break;
         if (/^\d+\.$/.test(s)) {
           const n2 = segments[i + 1]?.trim() ?? "";
@@ -144,6 +153,8 @@ export function segmentsToLines(segments: string[]): string[] {
         const s = segments[i].trim();
         if (isOptionSegment(s)) break;
         if (s === "Вопрос" || s === "Question") break;
+        if (s === "ТЕКСТ" || s === "Text") break;
+        if (isTextHeaderAt(segments, i)) break;
         if (/^КЛЮЧ$/i.test(s)) break;
         if (/^\d+\.$/.test(s)) {
           const n2 = segments[i + 1]?.trim() ?? "";
