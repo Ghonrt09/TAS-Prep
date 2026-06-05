@@ -8,7 +8,8 @@ import BankQuestionCard from "@/components/BankQuestionCard";
 import { MathText } from "@/components/MathText";
 import { useLanguage } from "@/context/LanguageContext";
 import { getCategoryBySlug } from "@/lib/bankCategories";
-import { parseLinesFormat, type BankBlock, type ParsedQuestion } from "@/lib/parseLinesJson";
+import { fetchBankData } from "@/lib/loadBankData";
+import type { BankBlock, ParsedQuestion } from "@/lib/parseLinesJson";
 
 function normalizeAnswer(s: string | undefined): string {
   if (s == null) return "";
@@ -43,14 +44,8 @@ export default function BankSlugPage() {
       setError("Формат не поддерживается");
       return;
     }
-    const url = "/data/" + encodeURIComponent(category.file);
-    fetch(url)
-      .then((res) => {
-        if (!res.ok) throw new Error("Файл не найден");
-        return res.json();
-      })
-      .then((json) => {
-        const { questions: q, blocks: b } = parseLinesFormat(json);
+    fetchBankData(category)
+      .then(({ questions: q, blocks: b }) => {
         setQuestions(q);
         setBlocks(b ?? []);
         setError(null);

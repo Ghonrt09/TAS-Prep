@@ -28,6 +28,10 @@ type BankQuestionCardProps = {
   questionNumber: number;
   selected: string | undefined;
   onSelect: (answer: string) => void;
+  /** Пробный тест: можно менять ответ до «Дальше». */
+  allowReselect?: boolean;
+  /** Текст для чтения перед вопросом (пробник). */
+  passage?: string;
 };
 
 export default function BankQuestionCard({
@@ -35,12 +39,15 @@ export default function BankQuestionCard({
   questionNumber,
   selected,
   onSelect,
+  allowReselect = false,
+  passage,
 }: BankQuestionCardProps) {
   const { t } = useLanguage();
   const q = question;
   const [draft, setDraft] = useState("");
 
   const answered = selected != null && selected !== "";
+  const lockOptions = answered && !allowReselect;
   const isCorrect = answered && isAnswerCorrect(selected, q);
   const explanationText = q.explanation?.trim() ?? "";
   const showExplanationPanel = answered;
@@ -86,6 +93,11 @@ export default function BankQuestionCard({
         </div>
 
         <div className="p-4 sm:p-5">
+          {passage ? (
+            <div className="mb-4 max-h-[280px] overflow-y-auto rounded-xl border border-slate-100 bg-slate-50 px-4 py-3 text-sm leading-relaxed text-slate-700">
+              <MathText text={passage} />
+            </div>
+          ) : null}
           <div className="font-medium leading-relaxed text-slate-900">
             <MathText text={q.question} />
           </div>
@@ -119,8 +131,8 @@ export default function BankQuestionCard({
                     key={i}
                     type="button"
                     onClick={() => onSelect(opt)}
-                    disabled={answered}
-                    className={optionClass + (answered ? "cursor-default" : "")}
+                    disabled={lockOptions}
+                    className={optionClass + (lockOptions ? "cursor-default" : "")}
                   >
                     <span
                       className={`mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-bold ${
@@ -153,7 +165,7 @@ export default function BankQuestionCard({
                   onKeyDown={(e) => {
                     if (e.key === "Enter" && draft.trim()) onSelect(draft.trim());
                   }}
-                  disabled={answered}
+                  disabled={lockOptions}
                   placeholder={t("bankAnswerPlaceholder")}
                   className={`w-full max-w-md rounded-xl border-2 px-3 py-2 text-sm focus:outline-none focus:ring-2 disabled:bg-slate-50 ${
                     answered
@@ -164,7 +176,7 @@ export default function BankQuestionCard({
                   }`}
                 />
               </div>
-              {!answered && (
+              {!lockOptions && (
                 <button
                   type="button"
                   onClick={() => draft.trim() && onSelect(draft.trim())}
