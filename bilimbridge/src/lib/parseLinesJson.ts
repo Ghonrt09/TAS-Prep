@@ -22,9 +22,16 @@ export type BankBlock =
 
 const ANSWER_KEY_REGEX = /^(\d+)\.\s*([A-E])\s*($|[(\s])/;
 const QUESTION_START_REGEX = /^\d+\.\s+/;
-const OPTION_REGEX = /^[A-E]\)\s*/;
+const OPTION_REGEX = /^[A-EА-ДЕ]\)\s*/;
 
-const STOP_PHRASES = /^(КЛЮЧИ|КЛЮЧ\s*$|ОТВЕТЫ|ANSWERS|Часть\s+\d|^\d+\.\s*[A-D]\s*,)/i;
+function normalizeCyrillicOptionLines(lines: string[]): string[] {
+  const map: Record<string, string> = { А: "A", Б: "B", В: "C", Г: "D", Д: "E", Е: "E" };
+  return lines.map((line) =>
+    line.replace(/^([АБВГДЕ])\)\s*/i, (_, c) => `${map[c.toUpperCase()] ?? c}) `)
+  );
+}
+
+const STOP_PHRASES = /^(КЛЮЧИ|КЛЮЧ\s*$|ОТВЕТЫ|ANSWERS|^\d+\.\s*[A-D]\s*,)/i;
 const EXAM_HEADER_REGEX = /^(ПРОБНЫЙ ТЕСТ|БЛОК\s+\d|Рекомендуемое время|^\d+\s*вопросов)/i;
 /** Начало нового мәтіна/текста для заданий (Қазақ тілі КШ НИШ, ГЧ КТЛ и т.д.) — не приклеивать к вариантам. */
 const NEW_PASSAGE_BLOCK_REGEX = /^\d+[-‑]\s*м[әə]тін\s*:/i;
@@ -211,7 +218,40 @@ function isStopLine(trimmed: string): boolean {
   if (KEY_SECTION_START.test(trimmed)) return true;
   if (/^ЖАУАП/i.test(trimmed)) return true;
   if (/^ТҮСІНДІРМЕ/i.test(trimmed)) return true;
-  if (/^2-Бөлім:|^2-БӨЛІМ:/i.test(trimmed)) return true;
+  return false;
+}
+
+/** Строки вида «1. Вопрос? A) … B) …» → отдельные строки вопроса и вариантов. */
+function expandInlineOptionLines(lines: string[]): string[] {
+  const out: string[] = [];
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed) continue;
+    const markerCount = (trimmed.match(/\s[A-EА-Д]\)\s/g) ?? []).length;
+    if (markerCount >= 2) {
+      const parts = trimmed.split(/\s+([A-EА-Д]\))\s+/);
+      if (parts[0]?.trim()) out.push(parts[0].trim());
+      for (let i = 1; i < parts.length; i += 2) {
+        const letter = parts[i];
+        const text = parts[i + 1]?.trim();
+        if (letter && text) out.push(`${letter} ${text}`);
+      }
+      continue;
+    }
+    out.push(trimmed);
+  }
+  return out;
+}
+
+/** Колхар: сопоставление колонок А/В — только по заголовку, не по слову «бағаны» в тексте. */
+function isKolharLines(lines: string[]): boolean {
+  const head = lines
+    .slice(0, 25)
+    .map((l) => l.trim())
+    .filter(Boolean)
+    .join("\n");
+  if (/Колонка А|Колонка В|САНДЫҚ СИПАТТАМАЛАР/i.test(head)) return true;
+  if (/А бағаны/i.test(head) && /В бағаны/i.test(head) && /№|баған/i.test(head)) return true;
   return false;
 }
 
@@ -237,7 +277,8 @@ export function parseLinesFormat(data: { lines?: string[] }): {
   passage: string;
   blocks: BankBlock[];
 } {
-  const lines = data.lines ?? [];
+  const rawLines = data.lines ?? [];
+  const lines = normalizeCyrillicOptionLines(expandInlineOptionLines(rawLines));
 
   const bulkKey = getBulkAnswerKey(lines);
   const answerKey = bulkKey ?? getAnswerKey(lines);
@@ -245,7 +286,7 @@ export function parseLinesFormat(data: { lines?: string[] }): {
   const numericKey = getNumericAnswerKey(lines);
   const numericKeyWithExpl = getNumericKeyWithExplanations(lines);
 
-  const isKolhar = lines.some((l) => /САНДЫҚ СИПАТТАМАЛАР|А бағаны|В бағаны/.test(l)) && bulkKey;
+  const isKolhar = isKolharLines(lines);
   if (isKolhar) {
     const out = parseKolharFormat(lines, answerKey);
     return { ...out, blocks: out.passage ? [{ type: "passage", text: out.passage }, ...out.questions.map((q) => ({ type: "question" as const, question: q }))] : out.questions.map((q) => ({ type: "question" as const, question: q })) };
@@ -446,49 +487,68 @@ function parseKolharFormat(
 ): { questions: ParsedQuestion[]; answerKey: Map<number, string>; passage: string } {
   const passageLines: string[] = [];
   const questions: ParsedQuestion[] = [];
-  const digitOnly = /^\d+\s*$/;
+  const isRussian = lines.some((l) => /Колонка А|Колонка В/i.test(l));
+  const colALabel = isRussian ? "Колонка А" : "А бағаны";
+  const colBLabel = isRussian ? "Колонка В" : "В бағаны";
+  const options = isRussian
+    ? ["Колонка А больше", "Колонка В больше", "Значения равны", "Невозможно определить"]
+    : ["А бағаны үлкен", "В бағаны үлкен", "Шамалар тең", "Анықтау мүмкін емес"];
+  const letterToOpt: Record<string, string> = {
+    A: options[0],
+    B: options[1],
+    C: options[2],
+    D: options[3],
+  };
+
   let i = 0;
-  while (i < lines.length && !digitOnly.test(lines[i].trim())) {
-    if (lines[i].trim()) passageLines.push(lines[i].trim());
+  while (i < lines.length) {
+    const t = lines[i].trim();
+    if (/^\d+\s*$/.test(t) || /^\d+\s+\S/.test(t)) break;
+    if (t && !isStopLine(t)) passageLines.push(t);
     i++;
   }
+
   let block: string[] = [];
   let num = 0;
-  const options = ["А бағаны үлкен", "В бағаны үлкен", "Шамалар тең", "Анықтау мүмкін емес"];
-  const letterToOpt: Record<string, string> = { A: options[0], B: options[1], C: options[2], D: options[3] };
+
+  function flushQuestion() {
+    if (block.length === 0 || num <= 0) return;
+    const correctLetter = answerKey.get(num);
+    const correctAnswer = correctLetter ? (letterToOpt[correctLetter] ?? options[0]) : options[0];
+    const mid = Math.ceil(block.length / 2);
+    questions.push({
+      id: num,
+      question: `${colALabel}: ${block.slice(0, mid).join(" ")}\n${colBLabel}: ${block.slice(mid).join(" ")}`,
+      options,
+      correctAnswer,
+    });
+    block = [];
+  }
 
   while (i < lines.length) {
     const trimmed = lines[i].trim();
     if (isStopLine(trimmed) || /\d+\.([A-D])\s*,/.test(trimmed)) break;
-    if (digitOnly.test(trimmed)) {
-      if (block.length > 0 && num > 0) {
-        const correctLetter = answerKey.get(num);
-        const correctAnswer = correctLetter ? letterToOpt[correctLetter] ?? options[0] : options[0];
-        questions.push({
-          id: num,
-          question: "А бағаны: " + block.slice(0, Math.ceil(block.length / 2)).join(" ") + "\nВ бағаны: " + block.slice(Math.ceil(block.length / 2)).join(" "),
-          options,
-          correctAnswer,
-        });
-      }
-      num = parseInt(trimmed, 10);
-      block = [];
+
+    const numOnly = trimmed.match(/^(\d+)\s*$/);
+    const numWithText = trimmed.match(/^(\d+)\s+(.+)$/);
+
+    if (numOnly) {
+      const n = parseInt(numOnly[1], 10);
+      if (n > 60) break;
+      flushQuestion();
+      num = n;
+    } else if (numWithText) {
+      const n = parseInt(numWithText[1], 10);
+      if (n > 60) break;
+      flushQuestion();
+      num = n;
+      block.push(numWithText[2]);
     } else if (num > 0 && trimmed) {
       block.push(trimmed);
     }
     i++;
   }
-  if (block.length > 0 && num > 0) {
-    const correctLetter = answerKey.get(num);
-    const correctAnswer = correctLetter ? letterToOpt[correctLetter] ?? options[0] : options[0];
-    const mid = Math.ceil(block.length / 2);
-    questions.push({
-      id: num,
-      question: "А бағаны: " + block.slice(0, mid).join(" ") + "\nВ бағаны: " + block.slice(mid).join(" "),
-      options,
-      correctAnswer,
-    });
-  }
+  flushQuestion();
 
   return {
     questions,

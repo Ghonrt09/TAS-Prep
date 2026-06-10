@@ -28,6 +28,7 @@ export const bankCategories: BankCategory[] = [
     descriptionKk: "НИШ дайындығына арналған математика материалы.",
     school: "nis",
     format: "detail",
+    questionCount: 40,
   },
   {
     slug: "matem-ktl-rus",
@@ -49,6 +50,7 @@ export const bankCategories: BankCategory[] = [
     descriptionKk: "РФМШ емтиханына дайындық, математика.",
     school: "rfmsh",
     format: "lines",
+    questionCount: 30,
   },
   {
     slug: "matem-nish-kaz",
@@ -59,6 +61,7 @@ export const bankCategories: BankCategory[] = [
     descriptionKk: "НИШ дайындығы, математика.",
     school: "nis",
     format: "lines",
+    questionCount: 40,
   },
   {
     slug: "matem-ktl-kaz",
@@ -79,6 +82,7 @@ export const bankCategories: BankCategory[] = [
     descriptionKk: "РФМШ математикасы.",
     school: "rfmsh",
     format: "lines",
+    questionCount: 30,
   },
   {
     slug: "gch-ktl-rus",
@@ -129,6 +133,7 @@ export const bankCategories: BankCategory[] = [
     descriptionKk: "Сандық сипаттамалар бойынша сынақ тесті.",
     school: "nis",
     format: "lines",
+    questionCount: 60,
   },
   {
     slug: "kolhar-nish-rus",
@@ -139,6 +144,7 @@ export const bankCategories: BankCategory[] = [
     descriptionKk: "Сандық сипаттамалар бойынша сынақ тесті (орыс).",
     school: "nis",
     format: "lines",
+    questionCount: 60,
   },
   {
     slug: "rus-yaz-rsh-nish",

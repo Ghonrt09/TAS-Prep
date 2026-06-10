@@ -15,10 +15,16 @@ import {
   type LoadedTrialSection,
   type TrialFlatItem,
 } from "@/lib/loadBankData";
-import { getTrialSections, isTrialSlug, type TrialSlug } from "@/lib/trialTests";
+import {
+  getTrialSections,
+  getSectionTitle,
+  isTrialSlug,
+  type TrialSchoolTrack,
+  type TrialSlug,
+} from "@/lib/trialTests";
 import { saveUserProgress } from "@/lib/userProfile";
 
-type Phase = "test" | "results" | "review";
+type Phase = "setup" | "test" | "results" | "review";
 
 function normalizeAnswer(s: string | undefined): string {
   if (s == null) return "";
@@ -44,12 +50,13 @@ export default function TrialTestPage() {
   const slug = isTrialSlug(raw) ? raw : null;
   const sectionDefs = slug ? getTrialSections(slug) : [];
 
+  const [track, setTrack] = useState<TrialSchoolTrack | null>(null);
   const [loadedSections, setLoadedSections] = useState<LoadedTrialSection[]>([]);
   const [items, setItems] = useState<TrialFlatItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
 
-  const [phase, setPhase] = useState<Phase>("test");
+  const [phase, setPhase] = useState<Phase>("setup");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [showGrid, setShowGrid] = useState(false);
@@ -57,39 +64,47 @@ export default function TrialTestPage() {
   const savedProgressRef = useRef(false);
 
   useEffect(() => {
-    if (!slug || sectionDefs.length === 0) {
-      setLoadedSections([]);
-      setItems([]);
-      setLoading(false);
-      setLoadError(slug ? "Не удалось загрузить пробник" : null);
+    if (!slug || !track || sectionDefs.length === 0) {
+      if (!track) {
+        setLoadedSections([]);
+        setItems([]);
+        setLoading(false);
+        setLoadError(null);
+      }
       return;
     }
 
     setLoading(true);
     setLoadError(null);
-    loadTrialExam(sectionDefs, language)
+    loadTrialExam(sectionDefs, track, language)
       .then((sections) => {
         if (sections.length === 0) throw new Error("Нет вопросов в пробнике");
         setLoadedSections(sections);
         setItems(flattenTrialSections(sections));
         setLoadError(null);
+        setPhase("test");
       })
       .catch((err) => {
         setLoadedSections([]);
         setItems([]);
         setLoadError(err instanceof Error ? err.message : "Ошибка загрузки");
+        setPhase("setup");
       })
       .finally(() => setLoading(false));
-  }, [slug, language, sectionDefs.length]);
+  }, [slug, track, language, sectionDefs.length]);
 
   useEffect(() => {
-    setPhase("test");
+    setTrack(null);
+    setPhase("setup");
     setCurrentIndex(0);
     setAnswers({});
     setReviewIndex(0);
     setShowGrid(false);
     savedProgressRef.current = false;
-  }, [slug, language]);
+    setLoadedSections([]);
+    setItems([]);
+    setLoadError(null);
+  }, [slug]);
 
   const currentItem = items[currentIndex];
   const totalQuestions = items.length;
@@ -183,6 +198,56 @@ export default function TrialTestPage() {
         <h1 className="text-2xl font-semibold text-slate-900">{examTitle}</h1>
         <div className="rounded-2xl border border-slate-200 bg-white p-8 text-center text-slate-500">
           {t("practiceLoading")}
+        </div>
+      </section>
+    );
+  }
+
+  if (phase === "setup" || !track) {
+    return (
+      <section className="flex flex-col gap-6">
+        <div>
+          <Link
+            href="/practice"
+            className="text-sm font-medium text-slate-600 hover:text-slate-900"
+          >
+            ← {t("practiceBackToList")}
+          </Link>
+          <h1 className="mt-4 text-2xl font-semibold text-slate-900">{examTitle}</h1>
+          <p className="mt-2 text-sm text-slate-600">{t("practiceChooseTrack")}</p>
+        </div>
+
+        {loadError ? (
+          <div className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+            {loadError}
+          </div>
+        ) : null}
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          {(["rsh", "ksh"] as const).map((trackId) => (
+            <button
+              key={trackId}
+              type="button"
+              disabled={loading}
+              onClick={() => setTrack(trackId)}
+              className="flex flex-col rounded-2xl border border-slate-200 bg-white p-6 text-left shadow-sm transition hover:border-blue-200 hover:shadow-md disabled:opacity-60"
+            >
+              <h2 className="text-lg font-semibold text-slate-900">
+                {trackId === "rsh" ? t("practiceTrackRsh") : t("practiceTrackKsh")}
+              </h2>
+              <p className="mt-2 text-sm text-slate-600">
+                {trackId === "rsh" ? t("practiceTrackRshHint") : t("practiceTrackKshHint")}
+              </p>
+              <ul className="mt-4 flex flex-col gap-1 text-xs text-slate-500">
+                {sectionDefs.map((section) => (
+                  <li key={section.id}>• {getSectionTitle(section, language)}</li>
+                ))}
+              </ul>
+              <span className="mt-6 text-sm font-semibold text-blue-700">
+                {t("practiceStartTrial")} →
+              </span>
+            </button>
+          ))}
         </div>
       </section>
     );

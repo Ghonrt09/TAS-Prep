@@ -2,29 +2,36 @@ import type { BankCategory } from "@/lib/bankCategories";
 import { parseMatemNisDetail } from "@/lib/parseMatemNisDetail";
 import { parseLinesFormat, type BankBlock, type ParsedQuestion } from "@/lib/parseLinesJson";
 import { bankJsonToLines } from "@/lib/segmentsToLines";
-import type { TrialSectionDef } from "@/lib/trialTests";
-import { getSectionCategory, getSectionTitle } from "@/lib/trialTests";
+import type { TrialSchoolTrack, TrialSectionDef } from "@/lib/trialTests";
+import { getSectionFile, getSectionTitle } from "@/lib/trialTests";
 
 export type BankLoadResult = {
   questions: ParsedQuestion[];
   blocks: BankBlock[];
 };
 
-export async function fetchBankData(category: BankCategory): Promise<BankLoadResult> {
-  const url = "/data/" + encodeURIComponent(category.file);
+export async function fetchJsonData(file: string): Promise<unknown> {
+  const url = "/data/" + encodeURIComponent(file);
   const res = await fetch(url);
-  if (!res.ok) throw new Error("Файл не найден");
+  if (!res.ok) throw new Error(`Файл не найден: ${file}`);
+  return res.json();
+}
 
-  const json = await res.json();
+export async function parseJsonToBank(file: string, format: "lines" | "detail" = "lines"): Promise<BankLoadResult> {
+  const json = await fetchJsonData(file);
 
-  if (category.format === "detail") {
-    const { questions } = parseMatemNisDetail(json);
+  if (format === "detail") {
+    const { questions } = parseMatemNisDetail(json as Parameters<typeof parseMatemNisDetail>[0]);
     return { questions, blocks: [] };
   }
 
-  const lines = bankJsonToLines(json);
+  const lines = bankJsonToLines(json as { lines?: string[]; segments?: string[] });
   const { questions, blocks } = parseLinesFormat({ lines });
   return { questions, blocks: blocks ?? [] };
+}
+
+export async function fetchBankData(category: BankCategory): Promise<BankLoadResult> {
+  return parseJsonToBank(category.file, category.format);
 }
 
 export type TrialQuestionItem = {
@@ -89,21 +96,20 @@ export type LoadedTrialSection = {
 
 export async function loadTrialExam(
   sections: TrialSectionDef[],
-  language: "ru" | "kk"
+  track: TrialSchoolTrack,
+  uiLanguage: "ru" | "kk"
 ): Promise<LoadedTrialSection[]> {
   const loaded: LoadedTrialSection[] = [];
 
   for (const section of sections) {
-    const category = getSectionCategory(section, language);
-    if (!category) continue;
-
-    const { questions, blocks } = await fetchBankData(category);
+    const file = getSectionFile(section, track);
+    const { questions, blocks } = await parseJsonToBank(file, "lines");
     const items = buildTrialQuestionItems(questions, blocks);
     if (items.length === 0) continue;
 
     loaded.push({
       section,
-      title: getSectionTitle(section, language),
+      title: getSectionTitle(section, uiLanguage),
       items,
     });
   }
